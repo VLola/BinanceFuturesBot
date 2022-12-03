@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 
 namespace BinanceFuturesBot.ViewModels
 {
-    internal class MainViewModel
+    public class LoginViewModel
     {
-        public MainModel MainModel { get; set; } = new();
-        public LoginViewModel LoginViewModel { get; set; } = new();
-        public MainViewModel() { }
-
+        public LoginModel LoginModel { get; set; } = new();
     }
 }

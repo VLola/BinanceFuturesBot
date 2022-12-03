@@ -10,22 +10,49 @@
         <ResourceDictionary Source="/Styles/MainStyles.xaml"/>
     </UserControl.Resources>
     <Grid Style="{StaticResource styleGridCenter}">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="200"/>
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Trial key:"/>
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="Api key:"/>
-        <TextBlock Grid.Row="2" Grid.Column="0" Text="Secret key:"/>
-        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=LoginModel.TrialKey}"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=LoginModel.ApiKey}"/>
-        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=LoginModel.SecretKey}"/>
-        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Content="Login"/>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <RadioButton Grid.Column="0" Content="Save" IsChecked="{Binding Path=LoginViewModel.LoginModel.IsSave}"/>
+            <RadioButton Grid.Column="1" Content="Login" IsChecked="{Binding Path=LoginViewModel.LoginModel.IsLogin}"/>
+        </Grid>
+        <Grid Grid.Row="1" Style="{StaticResource styleGridSave}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="200"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Trial key:"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Api key:"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Secret key:"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=LoginViewModel.LoginModel.Name}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=LoginViewModel.LoginModel.TrialKey}"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=LoginViewModel.LoginModel.ApiKey}"/>
+            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=LoginViewModel.LoginModel.SecretKey}"/>
+            <CheckBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="Testnet" IsChecked="{Binding Path=LoginViewModel.LoginModel.IsTestnet}"/>
+            <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="Save"/>
+        </Grid>
+        <Grid Grid.Row="1" Style="{StaticResource styleGridLogin}">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <ComboBox Grid.Row="0"/>
+            <Button Grid.Row="1" Content="Login"/>
+        </Grid>
     </Grid>
 </UserControl>

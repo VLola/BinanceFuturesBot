@@ -10,7 +10,7 @@
         <ResourceDictionary Source="/Styles/MainStyles.xaml"/>
     </UserControl.Resources>
     <Grid>
-        <Grid Style="{StaticResource styleGridLogin}">
+        <Grid Style="{StaticResource styleGridLoginBinance}">
             <local:LoginView/>
         </Grid>
         <Grid Style="{StaticResource styleGridMain}">

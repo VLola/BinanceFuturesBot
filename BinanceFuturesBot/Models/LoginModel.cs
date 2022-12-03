@@ -8,24 +8,24 @@ using System.Threading.Tasks;
 
 namespace BinanceFuturesBot.Models
 {
-    internal class LoginModel : INotifyPropertyChanged
+    public class LoginModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
-        private bool _isLogin { get; set; } = true;
-        public bool IsLogin
+        private bool _isLoginBinance { get; set; } = false;
+        public bool IsLoginBinance
         {
-            get { return _isLogin; }
+            get { return _isLoginBinance; }
             set
             {
-                _isLogin = value;
-                OnPropertyChanged("IsLogin");
+                _isLoginBinance = value;
+                OnPropertyChanged("IsLoginBinance");
             }
         }
-        private bool _isTrial { get; set; } = true;
+        private bool _isTrial { get; set; } = false;
         public bool IsTrial
         {
             get { return _isTrial; }
@@ -33,6 +33,16 @@ namespace BinanceFuturesBot.Models
             {
                 _isTrial = value;
                 OnPropertyChanged("IsTrial");
+            }
+        }
+        private string _name { get; set; }
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                _name = value;
+                OnPropertyChanged("Name");
             }
         }
         private string _trialKey { get; set; } = "Valentyn";
@@ -63,6 +73,36 @@ namespace BinanceFuturesBot.Models
             {
                 _secretKey = value;
                 OnPropertyChanged("SecretKey");
+            }
+        }
+        private bool _isTestnet { get; set; }
+        public bool IsTestnet
+        {
+            get { return _isTestnet; }
+            set
+            {
+                _isTestnet = value;
+                OnPropertyChanged("IsTestnet");
+            }
+        }
+        private bool _isSave { get; set; }
+        public bool IsSave
+        {
+            get { return _isSave; }
+            set
+            {
+                _isSave = value;
+                OnPropertyChanged("IsSave");
+            }
+        }
+        private bool _isLogin { get; set; } = true;
+        public bool IsLogin
+        {
+            get { return _isLogin; }
+            set
+            {
+                _isLogin = value;
+                OnPropertyChanged("IsLogin");
             }
         }
     }

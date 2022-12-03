@@ -4,13 +4,13 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
     </Style>
-    <Style TargetType="Grid" x:Key="styleGridLogin">
+    <Style TargetType="Grid" x:Key="styleGridLoginBinance">
         <Setter Property="Visibility" Value="Visible"/>
         <Style.Triggers>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding Path=LoginModel.IsLogin}" Value="True" />
-                    <Condition Binding="{Binding Path=LoginModel.IsTrial}" Value="True" />
+                    <Condition Binding="{Binding Path=LoginViewModel.LoginModel.IsLoginBinance}" Value="True" />
+                    <Condition Binding="{Binding Path=LoginViewModel.LoginModel.IsTrial}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <Setter Property="Visibility" Value="Hidden"/>
             </MultiDataTrigger>
@@ -21,11 +21,27 @@
         <Style.Triggers>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding Path=LoginModel.IsLogin}" Value="True" />
-                    <Condition Binding="{Binding Path=LoginModel.IsTrial}" Value="True" />
+                    <Condition Binding="{Binding Path=LoginViewModel.LoginModel.IsLoginBinance}" Value="True" />
+                    <Condition Binding="{Binding Path=LoginViewModel.LoginModel.IsTrial}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <Setter Property="Visibility" Value="Visible"/>
             </MultiDataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style TargetType="Grid" x:Key="styleGridLogin">
+        <Setter Property="Visibility" Value="Hidden"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=LoginViewModel.LoginModel.IsLogin}" Value="True" >
+                <Setter Property="Visibility" Value="Visible"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style TargetType="Grid" x:Key="styleGridSave">
+        <Setter Property="Visibility" Value="Hidden"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=LoginViewModel.LoginModel.IsSave}" Value="True" >
+                <Setter Property="Visibility" Value="Visible"/>
+            </DataTrigger>
         </Style.Triggers>
     </Style>
     <Style TargetType="TextBlock">
@@ -37,6 +53,23 @@
         <Setter Property="Margin" Value="5"/>
     </Style>
     <Style TargetType="Button">
+        <Setter Property="Margin" Value="5"/>
+    </Style>
+    <Style TargetType="CheckBox">
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="5"/>
+    </Style>
+    <Style TargetType="RadioButton">
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="5"/>
+    </Style>
+    <Style TargetType="ComboBox">
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="Margin" Value="5"/>
     </Style>
 </ResourceDictionary>
