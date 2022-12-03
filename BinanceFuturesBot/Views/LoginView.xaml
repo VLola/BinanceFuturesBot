@@ -33,26 +33,23 @@
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
-                <RowDefinition/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:"/>
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Trial key:"/>
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Api key:"/>
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Secret key:"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Api key:"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Secret key:"/>
             <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=LoginViewModel.LoginModel.Name}"/>
-            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=LoginViewModel.LoginModel.TrialKey}"/>
-            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=LoginViewModel.LoginModel.ApiKey}"/>
-            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=LoginViewModel.LoginModel.SecretKey}"/>
-            <CheckBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="Testnet" IsChecked="{Binding Path=LoginViewModel.LoginModel.IsTestnet}"/>
-            <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="Save"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=LoginViewModel.LoginModel.ApiKey}"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=LoginViewModel.LoginModel.SecretKey}"/>
+            <CheckBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Content="Testnet" IsChecked="{Binding Path=LoginViewModel.LoginModel.IsTestnet}"/>
+            <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="Save" Command="{Binding Path=LoginViewModel.SaveCommand}"/>
         </Grid>
         <Grid Grid.Row="1" Style="{StaticResource styleGridLogin}">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <ComboBox Grid.Row="0"/>
-            <Button Grid.Row="1" Content="Login"/>
+            <ComboBox Grid.Row="0" ItemsSource="{Binding Path=LoginViewModel.LoginModel.Users}" SelectedItem="{Binding Path=LoginViewModel.LoginModel.SelectedUser}"/>
+            <Button Grid.Row="1" Content="Login" Command="{Binding Path=LoginViewModel.LoginCommand}"/>
         </Grid>
     </Grid>
 </UserControl>
