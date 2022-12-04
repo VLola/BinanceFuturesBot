@@ -3,10 +3,13 @@ using Binance.Net.Enums;
 using Binance.Net.Interfaces;
 using Binance.Net.Objects.Models.Futures;
 using BinanceFuturesBot.Models;
+using CryptoExchange.Net.CommonObjects;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace BinanceFuturesBot.ViewModels
@@ -100,6 +103,40 @@ namespace BinanceFuturesBot.ViewModels
                 await Task.Delay(300000 * SymbolModel.Close);
                 SymbolModel.IsOpenOrder = false;
             });
+        }
+
+        public static long OpenOrder(Socket socket, string symbol, decimal quantity, PositionSide position_side)
+        {
+            OrderSide side;
+            FuturesOrderType type = FuturesOrderType.Market;
+
+            if (position_side == PositionSide.Long) side = OrderSide.Buy;
+            else side = OrderSide.Sell;
+
+            long order_id = Order(socket, symbol, side, type, quantity, position_side);
+            return order_id;
+        }
+        public void OpenOrder(OrderSide side, decimal quantity)
+        {
+            var result = Client.UsdFuturesApi.Trading.PlaceOrderAsync(symbol: SymbolModel.Name, side: side, type: FuturesOrderType.Market, quantity: quantity, positionSide: PositionSide.Both).Result;
+            if (!result.Success)
+            {
+                WriteLog($"Failed OpenOrder: {result.Error.Message}");
+            }
+            else
+            {
+                WriteLog($"OpenOrder: {JsonConvert.SerializeObject(result.Data)}");
+            }
+        }
+        private decimal RoundQuantity(decimal quantity)
+        {
+            decimal quantity_final = 0m;
+            if (SymbolModel.StepSize == 0.001m) quantity_final = Math.Round(quantity, 3);
+            else if (SymbolModel.StepSize == 0.01m) quantity_final = Math.Round(quantity, 2);
+            else if (SymbolModel.StepSize == 0.1m) quantity_final = Math.Round(quantity, 1);
+            else if (SymbolModel.StepSize == 1m) quantity_final = Math.Round(quantity, 0);
+            if (quantity_final < SymbolModel.MinQuantity) return SymbolModel.MinQuantity;
+            return quantity_final;
         }
         public List<IBinanceKline> Klines(KlineInterval interval, int limit)
         {

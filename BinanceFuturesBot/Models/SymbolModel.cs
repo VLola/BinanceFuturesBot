@@ -13,6 +13,37 @@ namespace BinanceFuturesBot.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
         public List<IBinanceKline> Klines { get; set; } = new();
+
+        private int _open { get; set; } = 14;
+        public int Open
+        {
+            get { return _open; }
+            set
+            {
+                _open = value;
+                OnPropertyChanged("Open");
+            }
+        }
+        private int _close { get; set; } = 3;
+        public int Close
+        {
+            get { return _close; }
+            set
+            {
+                _close = value;
+                OnPropertyChanged("Close");
+            }
+        }
+        private decimal _stopLoss { get; set; } = 1m;
+        public decimal StopLoss
+        {
+            get { return _stopLoss; }
+            set
+            {
+                _stopLoss = value;
+                OnPropertyChanged("StopLoss");
+            }
+        }
         private string _name { get; set; }
         public string Name
         {
@@ -21,6 +52,16 @@ namespace BinanceFuturesBot.Models
             {
                 _name = value;
                 OnPropertyChanged("Name");
+            }
+        }
+        private decimal _usdt { get; set; } = 11m;
+        public decimal Usdt
+        {
+            get { return _usdt; }
+            set
+            {
+                _usdt = value;
+                OnPropertyChanged("Usdt");
             }
         }
         private decimal _minQuantity { get; set; }
@@ -63,26 +104,6 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("Price");
             }
         }
-        private int _open { get; set; }
-        public int Open
-        {
-            get { return _open; }
-            set
-            {
-                _open = value;
-                OnPropertyChanged("Open");
-            }
-        }
-        private int _close { get; set; }
-        public int Close
-        {
-            get { return _close; }
-            set
-            {
-                _close = value;
-                OnPropertyChanged("Close");
-            }
-        }
         private bool _isOpenOrder { get; set; }
         public bool IsOpenOrder
         {
@@ -91,16 +112,6 @@ namespace BinanceFuturesBot.Models
             {
                 _isOpenOrder = value;
                 OnPropertyChanged("IsOpenOrder");
-            }
-        }
-        private decimal _stopLoss { get; set; }
-        public decimal StopLoss
-        {
-            get { return _stopLoss; }
-            set
-            {
-                _stopLoss = value;
-                OnPropertyChanged("StopLoss");
             }
         }
         private decimal _priceStopLoss { get; set; }
