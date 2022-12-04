@@ -39,7 +39,7 @@ namespace BinanceFuturesBot.ViewModels
                 {
                     if(SymbolModel.Price > SymbolModel.PriceStopLoss)
                     {
-
+                        CloseBet();
                     }
                 }
             }
@@ -100,21 +100,44 @@ namespace BinanceFuturesBot.ViewModels
         {
             await Task.Run(async () =>
             {
-                await Task.Delay(300000 * SymbolModel.Close);
+                OpenBet();
+                await Task.Delay(300000 * (SymbolModel.Close + 1));
+                await CloseBet();
                 SymbolModel.IsOpenOrder = false;
             });
         }
 
-        public static long OpenOrder(Socket socket, string symbol, decimal quantity, PositionSide position_side)
+        public void OpenBet()
         {
-            OrderSide side;
-            FuturesOrderType type = FuturesOrderType.Market;
-
-            if (position_side == PositionSide.Long) side = OrderSide.Buy;
-            else side = OrderSide.Sell;
-
-            long order_id = Order(socket, symbol, side, type, quantity, position_side);
-            return order_id;
+            decimal quantity = RoundQuantity(SymbolModel.Usdt / SymbolModel.Price);
+            OpenOrder(OrderSide.Sell, quantity);
+        }
+        private async Task CloseBet()
+        {
+            await Task.Run(async () =>
+            {
+                var result = await Client.UsdFuturesApi.Account.GetPositionInformationAsync(symbol: SymbolModel.Name);
+                if (!result.Success)
+                {
+                    WriteLog($"Failed CloseBet: {result.Error?.Message}");
+                }
+                else
+                {
+                    WriteLog("CloseBet:");
+                    decimal quantity = result.Data.ToList()[0].Quantity;
+                    if (quantity != 0m)
+                    {
+                        if (quantity > 0m)
+                        {
+                            OpenOrder(OrderSide.Sell, quantity);
+                        }
+                        else
+                        {
+                            OpenOrder(OrderSide.Buy, -quantity);
+                        }
+                    }
+                }
+            });
         }
         public void OpenOrder(OrderSide side, decimal quantity)
         {
