@@ -33,5 +33,55 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("Price");
             }
         }
+        private int _open { get; set; }
+        public int Open
+        {
+            get { return _open; }
+            set
+            {
+                _open = value;
+                OnPropertyChanged("Open");
+            }
+        }
+        private int _close { get; set; }
+        public int Close
+        {
+            get { return _close; }
+            set
+            {
+                _close = value;
+                OnPropertyChanged("Close");
+            }
+        }
+        private bool _isOpenOrder { get; set; }
+        public bool IsOpenOrder
+        {
+            get { return _isOpenOrder; }
+            set
+            {
+                _isOpenOrder = value;
+                OnPropertyChanged("IsOpenOrder");
+            }
+        }
+        private decimal _stopLoss { get; set; }
+        public decimal StopLoss
+        {
+            get { return _stopLoss; }
+            set
+            {
+                _stopLoss = value;
+                OnPropertyChanged("StopLoss");
+            }
+        }
+        private decimal _priceStopLoss { get; set; }
+        public decimal PriceStopLoss
+        {
+            get { return _priceStopLoss; }
+            set
+            {
+                _priceStopLoss = value;
+                OnPropertyChanged("PriceStopLoss");
+            }
+        }
     }
 }

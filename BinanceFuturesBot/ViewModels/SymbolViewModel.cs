@@ -2,14 +2,10 @@
 using Binance.Net.Enums;
 using Binance.Net.Interfaces;
 using BinanceFuturesBot.Models;
-using ScottPlot;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
-using System.Reflection.Metadata;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BinanceFuturesBot.ViewModels
@@ -25,7 +21,30 @@ namespace BinanceFuturesBot.ViewModels
             Client = client;
             SocketClient = socketClient;
             Load();
+            SymbolModel.PropertyChanged += SymbolModel_PropertyChanged;
         }
+
+        private void SymbolModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsOpenOrder")
+            {
+                if (SymbolModel.IsOpenOrder)
+                {
+                    StartStrategy();
+                }
+            }
+            else if (e.PropertyName == "Price")
+            {
+                if (SymbolModel.IsOpenOrder)
+                {
+                    if(SymbolModel.Price > SymbolModel.PriceStopLoss)
+                    {
+
+                    }
+                }
+            }
+        }
+
         private void Load()
         {
             SymbolModel.Klines = Klines(KlineInterval.FiveMinutes, 50);
@@ -48,6 +67,38 @@ namespace BinanceFuturesBot.ViewModels
         private void AddKline(IBinanceKline binanceKline)
         {
             SymbolModel.Klines.Add(binanceKline);
+            if (!SymbolModel.IsOpenOrder) {
+                CheckStrategy();
+            }
+        }
+        private async void CheckStrategy()
+        {
+            await Task.Run(() =>
+            {
+                int i = SymbolModel.Klines.Count - 3;
+                decimal sum = 0m;
+                for (int j = i; j > (i - 30); j--)
+                {
+                    sum += (SymbolModel.Klines[j].HighPrice - SymbolModel.Klines[j].LowPrice);
+                }
+                decimal average = (sum / 30);
+                if ((SymbolModel.Klines[i + 1].HighPrice - SymbolModel.Klines[i + 1].LowPrice) > (average * SymbolModel.Open))
+                {
+                    if (SymbolModel.Klines[i + 1].ClosePrice > SymbolModel.Klines[i + 1].OpenPrice)
+                    {
+                        SymbolModel.PriceStopLoss = SymbolModel.Klines[i + 1].ClosePrice + (SymbolModel.Klines[i + 1].ClosePrice * (SymbolModel.StopLoss / 100));
+                        SymbolModel.IsOpenOrder = true;
+                    }
+                }
+            });
+        }
+        private async void StartStrategy()
+        {
+            await Task.Run(async () =>
+            {
+                await Task.Delay(300000 * SymbolModel.Close);
+                SymbolModel.IsOpenOrder = false;
+            });
         }
         public List<IBinanceKline> Klines(KlineInterval interval, int limit)
         {
