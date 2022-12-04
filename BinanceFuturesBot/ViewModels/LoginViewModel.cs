@@ -1,6 +1,10 @@
-﻿using BinanceFuturesBot.Command;
+﻿using Binance.Net.Clients;
+using Binance.Net.Objects;
+using BinanceFuturesBot.Command;
 using BinanceFuturesBot.Models;
 using CryptoExchange.Net;
+using CryptoExchange.Net.Authentication;
+using CryptoExchange.Net.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -17,6 +21,8 @@ namespace BinanceFuturesBot.ViewModels
     {
         string site = "http://vburomanastia-001-site1.itempurl.com/";
         string _pathUsers = Directory.GetCurrentDirectory() + "/users/";
+        public BinanceClient? Client { get; set; }
+        public BinanceSocketClient? SocketClient { get; set; }
         private RelayCommand? _saveCommand;
         public RelayCommand SaveCommand
         {
@@ -61,7 +67,7 @@ namespace BinanceFuturesBot.ViewModels
                         if(result == "true")
                         {
                             LoginModel.IsTrial = true;
-                            LoginModel.IsLoginBinance = true;
+                            LoginBinance(user.IsTestnet, user.ApiKey, user.SecretKey);
                         }
                         else
                         {
@@ -73,6 +79,62 @@ namespace BinanceFuturesBot.ViewModels
                         MessageBox.Show($"{(int)response.StatusCode}, {response.ReasonPhrase}");
                     }
                 }
+            }
+        }
+        private void LoginBinance(bool testnet, string apiKey, string secretKey)
+        {
+            if (testnet)
+            {
+                // ------------- Test Api ----------------
+                BinanceClientOptions clientOption = new();
+                clientOption.UsdFuturesApiOptions.BaseAddress = "https://testnet.binancefuture.com";
+                Client = new(clientOption);
+
+                BinanceSocketClientOptions socketClientOption = new BinanceSocketClientOptions();
+                socketClientOption.UsdFuturesStreamsOptions.AutoReconnect = true;
+                socketClientOption.UsdFuturesStreamsOptions.ReconnectInterval = TimeSpan.FromMinutes(1);
+                socketClientOption.UsdFuturesStreamsOptions.BaseAddress = "wss://stream.binancefuture.com";
+                SocketClient = new BinanceSocketClient(socketClientOption);
+                // ------------- Test Api ----------------
+            }
+            else
+            {
+                // ------------- Real Api ----------------
+                Client = new();
+                SocketClient = new();
+                // ------------- Real Api ----------------
+            }
+
+            try
+            {
+                Client.SetApiCredentials(new ApiCredentials(apiKey, secretKey));
+                SocketClient.SetApiCredentials(new ApiCredentials(apiKey, secretKey));
+
+                if (CheckLogin())
+                {
+                    LoginModel.IsLoginBinance = true;
+                }
+                else {
+                    LoginModel.IsTrial = false;
+                    MessageBox.Show("Login failed!");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+        private bool CheckLogin()
+        {
+            try
+            {
+                var result = Client.UsdFuturesApi.Account.GetAccountInfoAsync().Result;
+                if (!result.Success) return false;
+                else return true;
+            }
+            catch
+            {
+                return false;
             }
         }
         private void Save()

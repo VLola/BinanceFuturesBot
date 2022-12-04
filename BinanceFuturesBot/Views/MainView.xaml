@@ -14,7 +14,20 @@
             <local:LoginView/>
         </Grid>
         <Grid Style="{StaticResource styleGridMain}">
-            <TextBlock Text="Enter"/>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <ListBox Grid.Column="0" ItemsSource="{Binding Path=MainModel.Symbols}" SelectedItem="{Binding Path=MainModel.SelectedSymbol}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <local:SymbolView/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <local:ChartView Grid.Column="1"/>
         </Grid>
     </Grid>
 </UserControl>
