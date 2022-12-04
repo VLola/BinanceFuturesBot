@@ -1,6 +1,7 @@
 ﻿using Binance.Net.Clients;
 using Binance.Net.Enums;
 using Binance.Net.Interfaces;
+using Binance.Net.Objects.Models.Futures;
 using BinanceFuturesBot.Models;
 using System;
 using System.Collections.Generic;
@@ -16,8 +17,11 @@ namespace BinanceFuturesBot.ViewModels
         public BinanceClient? Client { get; set; }
         public BinanceSocketClient? SocketClient { get; set; }
         public SymbolModel SymbolModel { get; set; } = new();
-        public SymbolViewModel(BinanceClient? client, BinanceSocketClient? socketClient, string name) {
-            SymbolModel.Name = name;
+        public SymbolViewModel(BinanceClient? client, BinanceSocketClient? socketClient, BinanceFuturesUsdtSymbol symbol) {
+            SymbolModel.Name = symbol.Name;
+            SymbolModel.MinQuantity = symbol.LotSizeFilter.MinQuantity;
+            SymbolModel.StepSize = symbol.LotSizeFilter.StepSize;
+            SymbolModel.TickSize = symbol.PriceFilter.TickSize;
             Client = client;
             SocketClient = socketClient;
             Load();
@@ -26,14 +30,7 @@ namespace BinanceFuturesBot.ViewModels
 
         private void SymbolModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "IsOpenOrder")
-            {
-                if (SymbolModel.IsOpenOrder)
-                {
-                    StartStrategy();
-                }
-            }
-            else if (e.PropertyName == "Price")
+            if (e.PropertyName == "Price")
             {
                 if (SymbolModel.IsOpenOrder)
                 {
@@ -45,11 +42,14 @@ namespace BinanceFuturesBot.ViewModels
             }
         }
 
-        private void Load()
+        private async void Load()
         {
-            SymbolModel.Klines = Klines(KlineInterval.FiveMinutes, 50);
-            SymbolModel.Price = SymbolModel.Klines[SymbolModel.Klines.Count - 1].ClosePrice;
-            StartKlineAsync();
+            await Task.Run(() =>
+            {
+                SymbolModel.Klines = Klines(KlineInterval.FiveMinutes, 50);
+                SymbolModel.Price = SymbolModel.Klines[SymbolModel.Klines.Count - 1].ClosePrice;
+                StartKlineAsync();
+            });
         }
         public void StartKlineAsync()
         {
@@ -88,6 +88,7 @@ namespace BinanceFuturesBot.ViewModels
                     {
                         SymbolModel.PriceStopLoss = SymbolModel.Klines[i + 1].ClosePrice + (SymbolModel.Klines[i + 1].ClosePrice * (SymbolModel.StopLoss / 100));
                         SymbolModel.IsOpenOrder = true;
+                        StartStrategy();
                     }
                 }
             });

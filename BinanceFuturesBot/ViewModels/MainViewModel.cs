@@ -1,9 +1,12 @@
-﻿using Binance.Net.Objects.Models.Spot;
+﻿using Binance.Net.Objects.Models.Futures;
+using Binance.Net.Objects.Models.Spot;
 using BinanceFuturesBot.Models;
+using CryptoExchange.Net.CommonObjects;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -47,39 +50,43 @@ namespace BinanceFuturesBot.ViewModels
         {
             await Task.Run(() => {
                 List<string> list = new();
-                foreach (var it in ListSymbols())
+                List<BinanceFuturesUsdtSymbol> symbols = ListSymbols();
+                foreach (var it in symbols)
                 {
-                    list.Add(it.Symbol);
+                    //BTSUSDT CVCUSDT FTTUSDT RAYUSDT SCUSDT TLMUSDT SRMUSDT BTCSTUSDT
+                    if (it.Name.EndsWith("USDT") && it.Name != "BTSUSDT" && it.Name != "CVCUSDT" && it.Name != "FTTUSDT" && it.Name != "RAYUSDT" && it.Name != "SCUSDT" && it.Name != "TLMUSDT" && it.Name != "SRMUSDT" && it.Name != "BTCSTUSDT")
+                    {
+                        list.Add(it.Name);
+                    }
                 }
                 list.Sort();
                 foreach (var it in list)
                 {
-                    //BTSUSDT CVCUSDT FTTUSDT RAYUSDT SCUSDT TLMUSDT SRMUSDT
-                    if (it.EndsWith("USDT") && it != "BTSUSDT" && it != "CVCUSDT" && it != "FTTUSDT" && it != "RAYUSDT" && it != "SCUSDT" && it != "TLMUSDT" && it != "SRMUSDT")
+                    foreach (var symbol in symbols)
                     {
-                        AddSymbol(it);
+                        if(symbol.Name == it)
+                        {
+                            AddSymbol(symbol);
+                        }
                     }
                 }
             });
         }
-        private async void AddSymbol(string name)
+        private void AddSymbol(BinanceFuturesUsdtSymbol symbol)
         {
-            await Task.Run(() =>
+            SymbolViewModel symbolViewModel = new(LoginViewModel.Client, LoginViewModel.SocketClient, symbol);
+            App.Current.Dispatcher.Invoke(new Action(() =>
             {
-                SymbolViewModel symbolViewModel = new(LoginViewModel.Client, LoginViewModel.SocketClient, name);
-                App.Current.Dispatcher.Invoke(new Action(() =>
-                {
-                    MainModel.Symbols.Add(symbolViewModel);
-                }));
-            });
+                MainModel.Symbols.Add(symbolViewModel);
+            }));
         }
-        private List<BinancePrice> ListSymbols()
+        private List<BinanceFuturesUsdtSymbol> ListSymbols()
         {
             try
             {
-                var result = LoginViewModel.Client.UsdFuturesApi.ExchangeData.GetPricesAsync().Result;
-                if (!result.Success) WriteLog($"Failed Success ListSymbols: {result.Error?.Message}");
-                return result.Data.ToList();
+                var result = LoginViewModel.Client.UsdFuturesApi.ExchangeData.GetExchangeInfoAsync().Result;
+                if (!result.Success) WriteLog($"Failed GetSumbolName {result.Error?.Message}");
+                return result.Data.Symbols.ToList();
             }
             catch (Exception ex)
             {

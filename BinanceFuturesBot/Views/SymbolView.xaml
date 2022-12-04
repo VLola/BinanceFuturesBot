@@ -16,8 +16,8 @@
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Column="0" Text="{Binding Path=SymbolModel.Name}"/>
         <TextBlock Grid.Column="1" Text="{Binding Path=SymbolModel.Price}"/>
-        <TextBlock Grid.Column="2" Text="{Binding Path=SymbolModel.Open}"/>
-        <TextBlock Grid.Column="3" Text="{Binding Path=SymbolModel.Close}"/>
-        <TextBlock Grid.Column="4" Text="{Binding Path=SymbolModel.StopLoss}"/>
+        <TextBlock Grid.Column="2" Text="{Binding Path=SymbolModel.MinQuantity}"/>
+        <TextBlock Grid.Column="3" Text="{Binding Path=SymbolModel.StepSize}"/>
+        <TextBlock Grid.Column="4" Text="{Binding Path=SymbolModel.TickSize}"/>
     </Grid>
 </UserControl>

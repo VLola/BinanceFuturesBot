@@ -23,6 +23,36 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("Name");
             }
         }
+        private decimal _minQuantity { get; set; }
+        public decimal MinQuantity
+        {
+            get { return _minQuantity; }
+            set
+            {
+                _minQuantity = value;
+                OnPropertyChanged("MinQuantity");
+            }
+        }
+        private decimal _stepSize { get; set; }
+        public decimal StepSize
+        {
+            get { return _stepSize; }
+            set
+            {
+                _stepSize = value;
+                OnPropertyChanged("StepSize");
+            }
+        }
+        private decimal _tickSize { get; set; }
+        public decimal TickSize
+        {
+            get { return _tickSize; }
+            set
+            {
+                _tickSize = value;
+                OnPropertyChanged("TickSize");
+            }
+        }
         private decimal _price { get; set; }
         public decimal Price
         {
