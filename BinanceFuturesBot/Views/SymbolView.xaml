@@ -15,13 +15,15 @@
             <ColumnDefinition Width="50"/>
             <ColumnDefinition Width="50"/>
             <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="50"/>
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Column="0" Text="{Binding Path=SymbolModel.Name}"/>
         <TextBlock Grid.Column="1" Text="{Binding Path=SymbolModel.Price}"/>
         <TextBlock Grid.Column="2" Text="{Binding Path=SymbolModel.Open}"/>
         <TextBlock Grid.Column="3" Text="{Binding Path=SymbolModel.Close}"/>
         <TextBlock Grid.Column="4" Text="{Binding Path=SymbolModel.StopLoss}"/>
-        <TextBlock Grid.Column="5" Text="{Binding Path=SymbolModel.Leverage}"/>
-        <TextBlock Grid.Column="6" Text="{Binding Path=SymbolModel.PositionSide}"/>
+        <TextBlock Grid.Column="5" Text="{Binding Path=SymbolModel.PositionSide}"/>
+        <TextBlock Grid.Column="6" Text="{Binding Path=SymbolModel.Leverage}"/>
+        <TextBlock Grid.Column="7" Text="{Binding Path=SymbolModel.MaxLeverage}"/>
     </Grid>
 </UserControl>

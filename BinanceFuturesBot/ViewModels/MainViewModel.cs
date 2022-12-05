@@ -22,13 +22,23 @@ namespace BinanceFuturesBot.ViewModels
         public MainModel MainModel { get; set; } = new();
         public LoginViewModel LoginViewModel { get; set; } = new();
         public ChartViewModel ChartViewModel { get; set; } = new();
+        private RelayCommand? _saveMaxLeverageCommand;
+        public RelayCommand SaveMaxLeverageCommand
+        {
+            get
+            {
+                return _saveMaxLeverageCommand ?? (_saveMaxLeverageCommand = new RelayCommand(obj => {
+                    SaveLeverage(null);
+                }));
+            }
+        }
         private RelayCommand? _saveLeverageCommand;
         public RelayCommand SaveLeverageCommand
         {
             get
             {
                 return _saveLeverageCommand ?? (_saveLeverageCommand = new RelayCommand(obj => {
-                    SaveLeverage();
+                    SaveLeverage(MainModel.Leverage);
                 }));
             }
         }
@@ -57,14 +67,14 @@ namespace BinanceFuturesBot.ViewModels
                 }
             }
         }
-        private async void SaveLeverage()
+        private async void SaveLeverage(int? leverage)
         {
             await Task.Run(() =>
             {
                 List<Task> tasks = new();
                 foreach (var item in MainModel.Symbols)
                 {
-                    Task task = item.SaveLeverage(MainModel.Leverage);
+                    Task task = item.SaveLeverage(leverage);
                     tasks.Add(task);
                 }
                 Task.WaitAll(tasks.ToArray());
@@ -77,6 +87,7 @@ namespace BinanceFuturesBot.ViewModels
                 List<string> list = new();
                 List<BinanceFuturesUsdtSymbol> symbols = ListSymbols();
                 List<BinancePositionDetailsUsdt> details = SymbolsDetail();
+                List<BinanceFuturesSymbolBracket> brakets = ListBrackets();
                 foreach (var it in symbols)
                 {
                     //BTSUSDT CVCUSDT FTTUSDT RAYUSDT SCUSDT TLMUSDT SRMUSDT BTCSTUSDT
@@ -88,15 +99,16 @@ namespace BinanceFuturesBot.ViewModels
                 list.Sort();
                 foreach (var it in list)
                 {
-                    BinanceFuturesUsdtSymbol symbol = symbols.FirstOrDefault(x=>x.Name == it);
-                    BinancePositionDetailsUsdt detail = details.FirstOrDefault(x=>x.Symbol == it);
-                    AddSymbol(symbol, detail);
+                    BinanceFuturesUsdtSymbol symbol = symbols.FirstOrDefault(x => x.Name == it);
+                    BinancePositionDetailsUsdt detail = details.FirstOrDefault(x => x.Symbol == it);
+                    int maxLeverage = brakets.FirstOrDefault(x => x.Symbol == it).Brackets.ToList()[0].InitialLeverage;
+                    AddSymbol(symbol, detail, maxLeverage);
                 }
             });
         }
-        private void AddSymbol(BinanceFuturesUsdtSymbol symbol, BinancePositionDetailsUsdt detail)
+        private void AddSymbol(BinanceFuturesUsdtSymbol symbol, BinancePositionDetailsUsdt detail, int maxLeverage)
         {
-            SymbolViewModel symbolViewModel = new(LoginViewModel.Client, LoginViewModel.SocketClient, symbol, detail);
+            SymbolViewModel symbolViewModel = new(LoginViewModel.Client, LoginViewModel.SocketClient, symbol, detail, maxLeverage);
             App.Current.Dispatcher.Invoke(new Action(() =>
             {
                 MainModel.Symbols.Add(symbolViewModel);
@@ -107,12 +119,12 @@ namespace BinanceFuturesBot.ViewModels
             try
             {
                 var result = LoginViewModel.Client.UsdFuturesApi.ExchangeData.GetExchangeInfoAsync().Result;
-                if (!result.Success) WriteLog($"Failed GetSumbolName {result.Error?.Message}");
+                if (!result.Success) WriteLog($"Failed ListSymbols {result.Error?.Message}");
                 return result.Data.Symbols.ToList();
             }
             catch (Exception ex)
             {
-                WriteLog($"Failed ListSymbols: {ex.Message}");
+                WriteLog($"ListSymbols: {ex.Message}");
             }
             return null;
         }
@@ -127,6 +139,20 @@ namespace BinanceFuturesBot.ViewModels
             catch (Exception ex)
             {
                 WriteLog($"Failed SymbolsDetail: {ex.Message}");
+            }
+            return null;
+        }
+        private List<BinanceFuturesSymbolBracket> ListBrackets()
+        {
+            try
+            {
+                var result = LoginViewModel.Client.UsdFuturesApi.Account.GetBracketsAsync().Result;
+                if (!result.Success) WriteLog($"Failed ListBrackets {result.Error?.Message}");
+                return result.Data.ToList();
+            }
+            catch (Exception ex)
+            {
+                WriteLog($"Failed ListBrackets: {ex.Message}");
             }
             return null;
         }

@@ -95,6 +95,16 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("TickSize");
             }
         }
+        private int _maxLeverage { get; set; }
+        public int MaxLeverage
+        {
+            get { return _maxLeverage; }
+            set
+            {
+                _maxLeverage = value;
+                OnPropertyChanged("MaxLeverage");
+            }
+        }
         private int _leverage { get; set; }
         public int Leverage
         {
