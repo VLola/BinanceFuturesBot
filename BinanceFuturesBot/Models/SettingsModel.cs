@@ -1,7 +1,4 @@
-﻿using Binance.Net.Enums;
-using BinanceFuturesBot.ViewModels;
-using System;
-using System.Collections.Generic;
+﻿using BinanceFuturesBot.ViewModels;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;

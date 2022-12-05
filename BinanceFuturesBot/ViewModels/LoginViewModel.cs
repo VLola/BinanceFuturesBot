@@ -2,9 +2,7 @@
 using Binance.Net.Objects;
 using BinanceFuturesBot.Command;
 using BinanceFuturesBot.Models;
-using CryptoExchange.Net;
 using CryptoExchange.Net.Authentication;
-using CryptoExchange.Net.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.IO;

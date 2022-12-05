@@ -1,18 +1,10 @@
 ﻿using Binance.Net.Objects.Models.Futures;
-using Binance.Net.Objects.Models.Spot;
-using BinanceFuturesBot.Command;
 using BinanceFuturesBot.Models;
-using CryptoExchange.Net.CommonObjects;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Xml.Linq;
 
 namespace BinanceFuturesBot.ViewModels
 {

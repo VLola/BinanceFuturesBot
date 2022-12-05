@@ -1,11 +1,9 @@
-﻿using Binance.Net.Interfaces;
-using BinanceFuturesBot.Models;
+﻿using BinanceFuturesBot.Models;
 using ScottPlot;
 using ScottPlot.Plottable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BinanceFuturesBot.ViewModels
