@@ -107,6 +107,7 @@ namespace BinanceFuturesBot.ViewModels
 
         public void OpenBet()
         {
+            WriteLog("OpenBet:");
             decimal quantity = RoundQuantity(SymbolModel.Usdt / SymbolModel.Price);
             OpenOrder(OrderSide.Sell, quantity);
         }
