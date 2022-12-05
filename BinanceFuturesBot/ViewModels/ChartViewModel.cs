@@ -3,6 +3,7 @@ using ScottPlot;
 using ScottPlot.Plottable;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,6 +12,7 @@ namespace BinanceFuturesBot.ViewModels
     public class ChartViewModel
     {
         public FinancePlot financePlot { get; set; }
+        public ScatterPlot scatterPlot { get; set; }
         public ChartModel ChartModel { get; set; } = new();
         public ChartViewModel() {
             ChartModel.MyPlot.Dispatcher.Invoke(new Action(() =>
@@ -47,7 +49,9 @@ namespace BinanceFuturesBot.ViewModels
                     ChartModel.MyPlot.Plot.RenderLock();
 
                     ChartModel.MyPlot.Plot.Remove(financePlot);
+                    ChartModel.MyPlot.Plot.Remove(scatterPlot);
                     financePlot = ChartModel.MyPlot.Plot.AddCandlesticks(oHLCs.ToArray());
+                    scatterPlot = ChartModel.MyPlot.Plot.AddScatterPoints(xs: symbolModel.Points.Select(it=>it.x).ToArray(), ys: symbolModel.Points.Select(it => it.y).ToArray(), color: Color.Orange, markerSize: 7);
                     ChartModel.MyPlot.Plot.RenderUnlock();
                     ChartModel.MyPlot.Refresh();
                 }));

@@ -13,6 +13,7 @@ namespace BinanceFuturesBot.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
         public List<IBinanceKline> Klines { get; set; } = new();
+        public List<(double x, double y)> Points { get; set; } = new();
 
         private int _open { get; set; } = 14;
         public int Open

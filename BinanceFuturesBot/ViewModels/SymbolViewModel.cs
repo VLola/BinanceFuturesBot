@@ -3,9 +3,11 @@ using Binance.Net.Enums;
 using Binance.Net.Interfaces;
 using Binance.Net.Objects.Models.Futures;
 using BinanceFuturesBot.Models;
+using CryptoExchange.Net.CommonObjects;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,7 +39,7 @@ namespace BinanceFuturesBot.ViewModels
                 {
                     if(SymbolModel.Price > SymbolModel.PriceStopLoss)
                     {
-                        CloseBet();
+                        CloseBetAsync();
                     }
                 }
             }
@@ -50,17 +52,21 @@ namespace BinanceFuturesBot.ViewModels
                 SymbolModel.Klines = Klines(KlineInterval.FiveMinutes, 50);
 
                 SymbolModel.Price = SymbolModel.Klines[SymbolModel.Klines.Count - 1].ClosePrice;
-                //StartKlineAsync();
+                StartKlineAsync();
             });
         }
-        public void StartKlineAsync()
+        public async void StartKlineAsync()
         {
-            SocketClient.UsdFuturesStreams.SubscribeToKlineUpdatesAsync(SymbolModel.Name, KlineInterval.FiveMinutes, Message =>
+            var result = await SocketClient.UsdFuturesStreams.SubscribeToKlineUpdatesAsync(SymbolModel.Name, KlineInterval.FiveMinutes, Message =>
             {
                 SymbolModel.Price = Message.Data.Data.ClosePrice;
                 if (Message.Data.Data.OpenTime == SymbolModel.Klines[SymbolModel.Klines.Count - 1].OpenTime) UpdateKline(Message.Data.Data);
                 else AddKline(Message.Data.Data);
             });
+            if (!result.Success)
+            {
+                WriteLog($"Failed StartKlineAsync: {result.Error?.Message}");
+            }
         }
         private void UpdateKline(IBinanceKline binanceKline)
         {
@@ -70,10 +76,10 @@ namespace BinanceFuturesBot.ViewModels
         {
             SymbolModel.Klines.Add(binanceKline);
             if (!SymbolModel.IsOpenOrder) {
-                CheckStrategy();
+                CheckStrategyAsync();
             }
         }
-        private async void CheckStrategy()
+        private async void CheckStrategyAsync()
         {
             await Task.Run(() =>
             {
@@ -90,18 +96,18 @@ namespace BinanceFuturesBot.ViewModels
                     {
                         SymbolModel.PriceStopLoss = SymbolModel.Klines[i + 1].ClosePrice + (SymbolModel.Klines[i + 1].ClosePrice * (SymbolModel.StopLoss / 100));
                         SymbolModel.IsOpenOrder = true;
-                        StartStrategy();
+                        StartStrategyAsync();
                     }
                 }
             });
         }
-        private async void StartStrategy()
+        private async void StartStrategyAsync()
         {
             await Task.Run(async () =>
             {
                 OpenBet();
                 await Task.Delay(300000 * (SymbolModel.Close + 1));
-                await CloseBet();
+                await CloseBetAsync();
                 SymbolModel.IsOpenOrder = false;
             });
         }
@@ -112,7 +118,7 @@ namespace BinanceFuturesBot.ViewModels
             decimal quantity = RoundQuantity(SymbolModel.Usdt / SymbolModel.Price);
             OpenOrder(OrderSide.Sell, quantity);
         }
-        private async Task CloseBet()
+        private async Task CloseBetAsync()
         {
             await Task.Run(async () =>
             {
@@ -149,6 +155,7 @@ namespace BinanceFuturesBot.ViewModels
             else
             {
                 WriteLog($"OpenOrder: {JsonConvert.SerializeObject(result.Data)}");
+                SymbolModel.Points.Add((DateTime.UtcNow.ToOADate() ,Decimal.ToDouble(SymbolModel.Price)));
             }
         }
         private decimal RoundQuantity(decimal quantity)
