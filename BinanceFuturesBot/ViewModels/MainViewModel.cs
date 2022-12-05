@@ -2,6 +2,7 @@
 using Binance.Net.Objects.Models.Spot;
 using BinanceFuturesBot.Models;
 using CryptoExchange.Net.CommonObjects;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -51,6 +52,7 @@ namespace BinanceFuturesBot.ViewModels
             await Task.Run(() => {
                 List<string> list = new();
                 List<BinanceFuturesUsdtSymbol> symbols = ListSymbols();
+                List<BinancePositionDetailsUsdt> details = SymbolsDetail();
                 foreach (var it in symbols)
                 {
                     //BTSUSDT CVCUSDT FTTUSDT RAYUSDT SCUSDT TLMUSDT SRMUSDT BTCSTUSDT
@@ -62,19 +64,15 @@ namespace BinanceFuturesBot.ViewModels
                 list.Sort();
                 foreach (var it in list)
                 {
-                    foreach (var symbol in symbols)
-                    {
-                        if(symbol.Name == it)
-                        {
-                            AddSymbol(symbol);
-                        }
-                    }
+                    BinanceFuturesUsdtSymbol symbol = symbols.FirstOrDefault(x=>x.Name == it);
+                    BinancePositionDetailsUsdt detail = details.FirstOrDefault(x=>x.Symbol == it);
+                    AddSymbol(symbol, detail);
                 }
             });
         }
-        private void AddSymbol(BinanceFuturesUsdtSymbol symbol)
+        private void AddSymbol(BinanceFuturesUsdtSymbol symbol, BinancePositionDetailsUsdt detail)
         {
-            SymbolViewModel symbolViewModel = new(LoginViewModel.Client, LoginViewModel.SocketClient, symbol);
+            SymbolViewModel symbolViewModel = new(LoginViewModel.Client, LoginViewModel.SocketClient, symbol, detail);
             App.Current.Dispatcher.Invoke(new Action(() =>
             {
                 MainModel.Symbols.Add(symbolViewModel);
@@ -91,8 +89,22 @@ namespace BinanceFuturesBot.ViewModels
             catch (Exception ex)
             {
                 WriteLog($"Failed ListSymbols: {ex.Message}");
-                return null;
             }
+            return null;
+        }
+        private List<BinancePositionDetailsUsdt> SymbolsDetail()
+        {
+            try
+            {
+                var result = LoginViewModel.Client.UsdFuturesApi.Account.GetPositionInformationAsync().Result;
+                if (!result.Success) WriteLog($"Failed SymbolsDetail: {result.Error?.Message}");
+                else return result.Data.ToList();
+            }
+            catch (Exception ex)
+            {
+                WriteLog($"Failed SymbolsDetail: {ex.Message}");
+            }
+            return null;
         }
         private void WriteLog(string text)
         {

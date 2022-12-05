@@ -18,11 +18,12 @@ namespace BinanceFuturesBot.ViewModels
         public BinanceClient? Client { get; set; }
         public BinanceSocketClient? SocketClient { get; set; }
         public SymbolModel SymbolModel { get; set; } = new();
-        public SymbolViewModel(BinanceClient? client, BinanceSocketClient? socketClient, BinanceFuturesUsdtSymbol symbol) {
+        public SymbolViewModel(BinanceClient? client, BinanceSocketClient? socketClient, BinanceFuturesUsdtSymbol symbol, BinancePositionDetailsUsdt detail) {
             SymbolModel.Name = symbol.Name;
             SymbolModel.MinQuantity = symbol.LotSizeFilter.MinQuantity;
             SymbolModel.StepSize = symbol.LotSizeFilter.StepSize;
             SymbolModel.TickSize = symbol.PriceFilter.TickSize;
+            SymbolModel.Leverage = detail.Leverage;
             Client = client;
             SocketClient = socketClient;
             Load();
@@ -48,9 +49,22 @@ namespace BinanceFuturesBot.ViewModels
             await Task.Run(() =>
             {
                 SymbolModel.Klines = Klines(KlineInterval.FiveMinutes, 50);
+
                 SymbolModel.Price = SymbolModel.Klines[SymbolModel.Klines.Count - 1].ClosePrice;
                 StartKlineAsync();
             });
+        }
+        private async void LoadLeverage()
+        {
+            var result = await Client.UsdFuturesApi.Account.GetPositionInformationAsync(symbol: SymbolModel.Name);
+            if (!result.Success)
+            {
+                WriteLog($"Failed LoadLeverage: {result.Error?.Message}");
+            }
+            else
+            {
+                SymbolModel.Leverage = result.Data.ToList().FirstOrDefault().Leverage;
+            }
         }
         public void StartKlineAsync()
         {
