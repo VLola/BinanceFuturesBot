@@ -21,27 +21,8 @@ namespace BinanceFuturesBot.ViewModels
         private string _pathLog = $"{Directory.GetCurrentDirectory()}/log/";
         public MainModel MainModel { get; set; } = new();
         public LoginViewModel LoginViewModel { get; set; } = new();
+        public SettingsViewModel SettingsViewModel { get; set; } = new();
         public ChartViewModel ChartViewModel { get; set; } = new();
-        private RelayCommand? _saveMaxLeverageCommand;
-        public RelayCommand SaveMaxLeverageCommand
-        {
-            get
-            {
-                return _saveMaxLeverageCommand ?? (_saveMaxLeverageCommand = new RelayCommand(obj => {
-                    SaveLeverage(null);
-                }));
-            }
-        }
-        private RelayCommand? _saveLeverageCommand;
-        public RelayCommand SaveLeverageCommand
-        {
-            get
-            {
-                return _saveLeverageCommand ?? (_saveLeverageCommand = new RelayCommand(obj => {
-                    SaveLeverage(MainModel.Leverage);
-                }));
-            }
-        }
         public MainViewModel()
         {
             if (!Directory.Exists(_pathLog)) Directory.CreateDirectory(_pathLog);
@@ -66,20 +47,6 @@ namespace BinanceFuturesBot.ViewModels
                     GetSumbolName();
                 }
             }
-        }
-        private async void SaveLeverage(int? leverage)
-        {
-            await Task.Run(() =>
-            {
-                List<Task> tasks = new();
-                foreach (var item in MainModel.Symbols)
-                {
-                    Task task = item.SaveLeverage(leverage);
-                    tasks.Add(task);
-                }
-                Task.WaitAll(tasks.ToArray());
-                MessageBox.Show("Leverages saved");
-            });
         }
         private async void GetSumbolName()
         {
@@ -108,7 +75,13 @@ namespace BinanceFuturesBot.ViewModels
         }
         private void AddSymbol(BinanceFuturesUsdtSymbol symbol, BinancePositionDetailsUsdt detail, int maxLeverage)
         {
-            SymbolViewModel symbolViewModel = new(LoginViewModel.Client, LoginViewModel.SocketClient, symbol, detail, maxLeverage);
+            SymbolDetailViewModel symbolDetailViewModel = new(LoginViewModel.Client, detail, maxLeverage);
+            App.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                SettingsViewModel.SettingsModel.Settings.Add(symbolDetailViewModel);
+            }));
+
+            SymbolViewModel symbolViewModel = new(LoginViewModel.Client, LoginViewModel.SocketClient, symbol);
             App.Current.Dispatcher.Invoke(new Action(() =>
             {
                 MainModel.Symbols.Add(symbolViewModel);

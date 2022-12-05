@@ -95,36 +95,6 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("TickSize");
             }
         }
-        private int _maxLeverage { get; set; }
-        public int MaxLeverage
-        {
-            get { return _maxLeverage; }
-            set
-            {
-                _maxLeverage = value;
-                OnPropertyChanged("MaxLeverage");
-            }
-        }
-        private int _leverage { get; set; }
-        public int Leverage
-        {
-            get { return _leverage; }
-            set
-            {
-                _leverage = value;
-                OnPropertyChanged("Leverage");
-            }
-        }
-        private PositionSide _positionSide { get; set; }
-        public PositionSide PositionSide
-        {
-            get { return _positionSide; }
-            set
-            {
-                _positionSide = value;
-                OnPropertyChanged("PositionSide");
-            }
-        }
         private decimal _price { get; set; }
         public decimal Price
         {

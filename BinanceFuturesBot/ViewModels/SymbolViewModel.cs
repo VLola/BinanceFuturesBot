@@ -18,14 +18,11 @@ namespace BinanceFuturesBot.ViewModels
         public BinanceClient? Client { get; set; }
         public BinanceSocketClient? SocketClient { get; set; }
         public SymbolModel SymbolModel { get; set; } = new();
-        public SymbolViewModel(BinanceClient? client, BinanceSocketClient? socketClient, BinanceFuturesUsdtSymbol symbol, BinancePositionDetailsUsdt detail, int maxLeverage) {
+        public SymbolViewModel(BinanceClient? client, BinanceSocketClient? socketClient, BinanceFuturesUsdtSymbol symbol) {
             SymbolModel.Name = symbol.Name;
             SymbolModel.MinQuantity = symbol.LotSizeFilter.MinQuantity;
             SymbolModel.StepSize = symbol.LotSizeFilter.StepSize;
             SymbolModel.TickSize = symbol.PriceFilter.TickSize;
-            SymbolModel.MaxLeverage= maxLeverage;
-            SymbolModel.Leverage = detail.Leverage;
-            SymbolModel.PositionSide = detail.PositionSide;
             Client = client;
             SocketClient = socketClient;
             Load();
@@ -54,41 +51,6 @@ namespace BinanceFuturesBot.ViewModels
 
                 SymbolModel.Price = SymbolModel.Klines[SymbolModel.Klines.Count - 1].ClosePrice;
                 //StartKlineAsync();
-            });
-        }
-        private async void LoadLeverage()
-        {
-            var result = await Client.UsdFuturesApi.Account.GetPositionInformationAsync(symbol: SymbolModel.Name);
-            if (!result.Success)
-            {
-                WriteLog($"Failed LoadLeverage: {result.Error?.Message}");
-            }
-            else
-            {
-                SymbolModel.Leverage = result.Data.ToList().FirstOrDefault().Leverage;
-            }
-        }
-        public async Task SaveLeverage(int? lev)
-        {
-            await Task.Run(async () =>
-            {
-                int leverage;
-
-                if (lev == null) leverage = SymbolModel.MaxLeverage;
-                else leverage = (int)lev;
-
-                if(leverage <= SymbolModel.MaxLeverage && leverage != SymbolModel.Leverage)
-                {
-                    var result = await Client.UsdFuturesApi.Account.ChangeInitialLeverageAsync(symbol: SymbolModel.Name, leverage: leverage);
-                    if (!result.Success)
-                    {
-                        WriteLog($"Failed LoadLeverage: {result.Error?.Message}");
-                    }
-                    else
-                    {
-                        SymbolModel.Leverage = result.Data.Leverage;
-                    }
-                }
             });
         }
         public void StartKlineAsync()
