@@ -3,13 +3,11 @@ using Binance.Net.Enums;
 using Binance.Net.Interfaces;
 using Binance.Net.Objects.Models.Futures;
 using BinanceFuturesBot.Models;
-using CryptoExchange.Net.CommonObjects;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace BinanceFuturesBot.ViewModels
