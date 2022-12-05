@@ -24,6 +24,7 @@ namespace BinanceFuturesBot.ViewModels
             SymbolModel.StepSize = symbol.LotSizeFilter.StepSize;
             SymbolModel.TickSize = symbol.PriceFilter.TickSize;
             SymbolModel.Leverage = detail.Leverage;
+            SymbolModel.PositionSide = detail.PositionSide;
             Client = client;
             SocketClient = socketClient;
             Load();
@@ -64,6 +65,18 @@ namespace BinanceFuturesBot.ViewModels
             else
             {
                 SymbolModel.Leverage = result.Data.ToList().FirstOrDefault().Leverage;
+            }
+        }
+        public async void SaveLeverage(int leverage)
+        {
+            var result = await Client.UsdFuturesApi.Account.ChangeInitialLeverageAsync(symbol: SymbolModel.Name, leverage: leverage);
+            if (!result.Success)
+            {
+                WriteLog($"Failed LoadLeverage: {result.Error?.Message}");
+            }
+            else
+            {
+                SymbolModel.Leverage = result.Data.Leverage;
             }
         }
         public void StartKlineAsync()

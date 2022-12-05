@@ -1,4 +1,5 @@
-﻿using Binance.Net.Interfaces;
+﻿using Binance.Net.Enums;
+using Binance.Net.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -102,6 +103,16 @@ namespace BinanceFuturesBot.Models
             {
                 _leverage = value;
                 OnPropertyChanged("Leverage");
+            }
+        }
+        private PositionSide _positionSide { get; set; }
+        public PositionSide PositionSide
+        {
+            get { return _positionSide; }
+            set
+            {
+                _positionSide = value;
+                OnPropertyChanged("PositionSide");
             }
         }
         private decimal _price { get; set; }
