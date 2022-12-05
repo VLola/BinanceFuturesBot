@@ -67,17 +67,20 @@ namespace BinanceFuturesBot.ViewModels
                 SymbolModel.Leverage = result.Data.ToList().FirstOrDefault().Leverage;
             }
         }
-        public async void SaveLeverage(int leverage)
+        public async Task SaveLeverage(int leverage)
         {
-            var result = await Client.UsdFuturesApi.Account.ChangeInitialLeverageAsync(symbol: SymbolModel.Name, leverage: leverage);
-            if (!result.Success)
+            await Task.Run(async () =>
             {
-                WriteLog($"Failed LoadLeverage: {result.Error?.Message}");
-            }
-            else
-            {
-                SymbolModel.Leverage = result.Data.Leverage;
-            }
+                var result = await Client.UsdFuturesApi.Account.ChangeInitialLeverageAsync(symbol: SymbolModel.Name, leverage: leverage);
+                if (!result.Success)
+                {
+                    WriteLog($"Failed LoadLeverage: {result.Error?.Message}");
+                }
+                else
+                {
+                    SymbolModel.Leverage = result.Data.Leverage;
+                }
+            });
         }
         public void StartKlineAsync()
         {

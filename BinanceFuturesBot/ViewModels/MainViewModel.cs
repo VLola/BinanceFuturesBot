@@ -1,5 +1,6 @@
 ﻿using Binance.Net.Objects.Models.Futures;
 using Binance.Net.Objects.Models.Spot;
+using BinanceFuturesBot.Command;
 using BinanceFuturesBot.Models;
 using CryptoExchange.Net.CommonObjects;
 using Newtonsoft.Json;
@@ -21,6 +22,16 @@ namespace BinanceFuturesBot.ViewModels
         public MainModel MainModel { get; set; } = new();
         public LoginViewModel LoginViewModel { get; set; } = new();
         public ChartViewModel ChartViewModel { get; set; } = new();
+        private RelayCommand? _saveLeverageCommand;
+        public RelayCommand SaveLeverageCommand
+        {
+            get
+            {
+                return _saveLeverageCommand ?? (_saveLeverageCommand = new RelayCommand(obj => {
+                    SaveLeverage();
+                }));
+            }
+        }
         public MainViewModel()
         {
             if (!Directory.Exists(_pathLog)) Directory.CreateDirectory(_pathLog);
@@ -46,7 +57,20 @@ namespace BinanceFuturesBot.ViewModels
                 }
             }
         }
-
+        private async void SaveLeverage()
+        {
+            await Task.Run(() =>
+            {
+                List<Task> tasks = new();
+                foreach (var item in MainModel.Symbols)
+                {
+                    Task task = item.SaveLeverage(MainModel.Leverage);
+                    tasks.Add(task);
+                }
+                Task.WaitAll(tasks.ToArray());
+                MessageBox.Show("Leverages saved");
+            });
+        }
         private async void GetSumbolName()
         {
             await Task.Run(() => {

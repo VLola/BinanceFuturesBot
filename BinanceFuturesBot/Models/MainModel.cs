@@ -28,5 +28,15 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("SelectedSymbol");
             }
         }
+        private int _leverage { get; set; } = 20;
+        public int Leverage
+        {
+            get { return _leverage; }
+            set
+            {
+                _leverage = value;
+                OnPropertyChanged("Leverage");
+            }
+        }
     }
 }
