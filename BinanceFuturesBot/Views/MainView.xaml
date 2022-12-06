@@ -21,53 +21,13 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <ListBox Grid.Column="0" ItemsSource="{Binding Path=MainModel.Symbols}" SelectedItem="{Binding Path=MainModel.SelectedSymbol}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <local:SymbolView/>
-                                    </Grid>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        <local:SymbolView Grid.Column="0"/>
                         <local:ChartView Grid.Column="1"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Settings">
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="Leverage:"/>
-                            <TextBox Grid.Column="1" Text="{Binding Path=SettingsViewModel.SettingsModel.Leverage}"/>
-                            <Button Grid.Column="2" Content="Save leverage" Command="{Binding Path=SettingsViewModel.SaveLeverageCommand}"/>
-                            <Button Grid.Column="3" Content="Max leverage" Command="{Binding Path=SettingsViewModel.SaveMaxLeverageCommand}"/>
-                        </Grid>
-                        <Grid Grid.Column="1">
-                            <ListView ItemsSource="{Binding Path=SettingsViewModel.SettingsModel.Settings}">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Width="100" Header="Name" DisplayMemberBinding="{Binding Path=SymbolDetailModel.Name}"/>
-                                        <!--<GridViewColumn Width="100" Header="PositionSide" DisplayMemberBinding="{Binding Path=SymbolDetailModel.PositionSide}"/>-->
-                                        <GridViewColumn Width="100" Header="Max Leverage" DisplayMemberBinding="{Binding Path=SymbolDetailModel.MaxLeverage}"/>
-                                        <GridViewColumn Width="100" Header="Leverage" DisplayMemberBinding="{Binding Path=SymbolDetailModel.Leverage}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
+                        <local:SettingsView/>
                     </Grid>
                 </TabItem>
             </TabControl>

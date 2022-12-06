@@ -4,6 +4,7 @@ using ScottPlot.Plottable;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,6 +12,7 @@ namespace BinanceFuturesBot.ViewModels
 {
     public class ChartViewModel
     {
+        private string _pathLog = $"{Directory.GetCurrentDirectory()}/log/";
         public FinancePlot financePlot { get; set; }
         public ScatterPlot scatterPlot { get; set; }
         public ChartModel ChartModel { get; set; } = new();
@@ -34,7 +36,9 @@ namespace BinanceFuturesBot.ViewModels
         {
             await Task.Run(() =>
             {
-                List<OHLC> oHLCs = symbolModel.Klines.Select(item => new OHLC(
+                try
+                {
+                    List<OHLC> oHLCs = symbolModel.Klines.Select(item => new OHLC(
                         open: Decimal.ToDouble(item.OpenPrice),
                         high: Decimal.ToDouble(item.HighPrice),
                         low: Decimal.ToDouble(item.LowPrice),
@@ -44,18 +48,31 @@ namespace BinanceFuturesBot.ViewModels
                         volume: Decimal.ToDouble(item.Volume)
                     )).ToList();
 
-                ChartModel.MyPlot.Dispatcher.Invoke(new Action(() =>
-                {
-                    ChartModel.MyPlot.Plot.RenderLock();
+                    ChartModel.MyPlot.Dispatcher.Invoke(new Action(() =>
+                    {
+                        ChartModel.MyPlot.Plot.RenderLock();
 
-                    ChartModel.MyPlot.Plot.Remove(financePlot);
-                    ChartModel.MyPlot.Plot.Remove(scatterPlot);
-                    financePlot = ChartModel.MyPlot.Plot.AddCandlesticks(oHLCs.ToArray());
-                    scatterPlot = ChartModel.MyPlot.Plot.AddScatterPoints(xs: symbolModel.Points.Select(it=>it.x).ToArray(), ys: symbolModel.Points.Select(it => it.y).ToArray(), color: Color.Orange, markerSize: 7);
-                    ChartModel.MyPlot.Plot.RenderUnlock();
-                    ChartModel.MyPlot.Refresh();
-                }));
+                        ChartModel.MyPlot.Plot.Remove(financePlot);
+                        ChartModel.MyPlot.Plot.Remove(scatterPlot);
+                        financePlot = ChartModel.MyPlot.Plot.AddCandlesticks(oHLCs.ToArray());
+                        scatterPlot = ChartModel.MyPlot.Plot.AddScatterPoints(xs: symbolModel.Points.Select(it => it.x).ToArray(), ys: symbolModel.Points.Select(it => it.y).ToArray(), color: Color.Orange, markerSize: 7);
+                        ChartModel.MyPlot.Plot.RenderUnlock();
+                        ChartModel.MyPlot.Refresh();
+                    }));
+                }
+                catch (Exception ex)
+                {
+                    WriteLog($"Failed Load: {ex.Message}");
+                }
             });
+        }
+        private void WriteLog(string text)
+        {
+            try
+            {
+                File.AppendAllText(_pathLog + "_CHART_LOG", $"{DateTime.Now} {text}\n");
+            }
+            catch { }
         }
     }
 }

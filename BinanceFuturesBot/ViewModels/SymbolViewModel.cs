@@ -35,7 +35,7 @@ namespace BinanceFuturesBot.ViewModels
         {
             if (e.PropertyName == "Price")
             {
-                if (SymbolModel.IsOpenOrder)
+                if (SymbolModel.IsOpenOrder && SymbolModel.IsRun)
                 {
                     if(SymbolModel.Price > SymbolModel.PriceStopLoss)
                     {
@@ -57,15 +57,22 @@ namespace BinanceFuturesBot.ViewModels
         }
         public async void StartKlineAsync()
         {
-            var result = await SocketClient.UsdFuturesStreams.SubscribeToKlineUpdatesAsync(SymbolModel.Name, KlineInterval.FiveMinutes, Message =>
+            try
             {
-                SymbolModel.Price = Message.Data.Data.ClosePrice;
-                if (Message.Data.Data.OpenTime == SymbolModel.Klines[SymbolModel.Klines.Count - 1].OpenTime) UpdateKline(Message.Data.Data);
-                else AddKline(Message.Data.Data);
-            });
-            if (!result.Success)
+                var result = await SocketClient.UsdFuturesStreams.SubscribeToKlineUpdatesAsync(SymbolModel.Name, KlineInterval.FiveMinutes, Message =>
+                {
+                    SymbolModel.Price = Message.Data.Data.ClosePrice;
+                    if (Message.Data.Data.OpenTime == SymbolModel.Klines[SymbolModel.Klines.Count - 1].OpenTime) UpdateKline(Message.Data.Data);
+                    else AddKline(Message.Data.Data);
+                });
+                if (!result.Success)
+                {
+                    WriteLog($"Failed StartKlineAsync: {result.Error?.Message}");
+                }
+            }
+            catch (Exception eX)
             {
-                WriteLog($"Failed StartKlineAsync: {result.Error?.Message}");
+                WriteLog($"StartKlineAsync {eX.Message}");
             }
         }
         private void UpdateKline(IBinanceKline binanceKline)
@@ -75,7 +82,7 @@ namespace BinanceFuturesBot.ViewModels
         private void AddKline(IBinanceKline binanceKline)
         {
             SymbolModel.Klines.Add(binanceKline);
-            if (!SymbolModel.IsOpenOrder) {
+            if (!SymbolModel.IsOpenOrder && SymbolModel.IsRun) {
                 CheckStrategyAsync();
             }
         }
@@ -83,21 +90,28 @@ namespace BinanceFuturesBot.ViewModels
         {
             await Task.Run(() =>
             {
-                int i = SymbolModel.Klines.Count - 3;
-                decimal sum = 0m;
-                for (int j = i; j > (i - 30); j--)
+                try
                 {
-                    sum += (SymbolModel.Klines[j].HighPrice - SymbolModel.Klines[j].LowPrice);
-                }
-                decimal average = (sum / 30);
-                if ((SymbolModel.Klines[i + 1].HighPrice - SymbolModel.Klines[i + 1].LowPrice) > (average * SymbolModel.Open))
-                {
-                    if (SymbolModel.Klines[i + 1].ClosePrice > SymbolModel.Klines[i + 1].OpenPrice)
+                    int i = SymbolModel.Klines.Count - 3;
+                    decimal sum = 0m;
+                    for (int j = i; j > (i - 30); j--)
                     {
-                        SymbolModel.PriceStopLoss = SymbolModel.Klines[i + 1].ClosePrice + (SymbolModel.Klines[i + 1].ClosePrice * (SymbolModel.StopLoss / 100));
-                        SymbolModel.IsOpenOrder = true;
-                        StartStrategyAsync();
+                        sum += (SymbolModel.Klines[j].HighPrice - SymbolModel.Klines[j].LowPrice);
                     }
+                    decimal average = (sum / 30);
+                    if ((SymbolModel.Klines[i + 1].HighPrice - SymbolModel.Klines[i + 1].LowPrice) > (average * SymbolModel.Open))
+                    {
+                        if (SymbolModel.Klines[i + 1].ClosePrice > SymbolModel.Klines[i + 1].OpenPrice)
+                        {
+                            SymbolModel.PriceStopLoss = SymbolModel.Klines[i + 1].ClosePrice + (SymbolModel.Klines[i + 1].ClosePrice * (SymbolModel.StopLoss / 100));
+                            SymbolModel.IsOpenOrder = true;
+                            StartStrategyAsync();
+                        }
+                    }
+                }
+                catch (Exception eX)
+                {
+                    WriteLog($"CheckStrategyAsync {eX.Message}");
                 }
             });
         }
@@ -122,40 +136,54 @@ namespace BinanceFuturesBot.ViewModels
         {
             await Task.Run(async () =>
             {
-                var result = await Client.UsdFuturesApi.Account.GetPositionInformationAsync(symbol: SymbolModel.Name);
-                if (!result.Success)
+                try
                 {
-                    WriteLog($"Failed CloseBet: {result.Error?.Message}");
-                }
-                else
-                {
-                    WriteLog("CloseBet:");
-                    decimal quantity = result.Data.ToList()[0].Quantity;
-                    if (quantity != 0m)
+                    var result = await Client.UsdFuturesApi.Account.GetPositionInformationAsync(symbol: SymbolModel.Name);
+                    if (!result.Success)
                     {
-                        if (quantity > 0m)
+                        WriteLog($"Failed CloseBet: {result.Error?.Message}");
+                    }
+                    else
+                    {
+                        WriteLog("CloseBet:");
+                        decimal quantity = result.Data.ToList()[0].Quantity;
+                        if (quantity != 0m)
                         {
-                            OpenOrder(OrderSide.Sell, quantity);
-                        }
-                        else
-                        {
-                            OpenOrder(OrderSide.Buy, -quantity);
+                            if (quantity > 0m)
+                            {
+                                OpenOrder(OrderSide.Sell, quantity);
+                            }
+                            else
+                            {
+                                OpenOrder(OrderSide.Buy, -quantity);
+                            }
                         }
                     }
+                }
+                catch (Exception eX)
+                {
+                    WriteLog($"CloseBetAsync {eX.Message}");
                 }
             });
         }
         public void OpenOrder(OrderSide side, decimal quantity)
         {
-            var result = Client.UsdFuturesApi.Trading.PlaceOrderAsync(symbol: SymbolModel.Name, side: side, type: FuturesOrderType.Market, quantity: quantity, positionSide: PositionSide.Both).Result;
-            if (!result.Success)
+            try
             {
-                WriteLog($"Failed OpenOrder: {result.Error.Message}");
+                var result = Client.UsdFuturesApi.Trading.PlaceOrderAsync(symbol: SymbolModel.Name, side: side, type: FuturesOrderType.Market, quantity: quantity, positionSide: PositionSide.Both).Result;
+                if (!result.Success)
+                {
+                    WriteLog($"Failed OpenOrder: {result.Error.Message}");
+                }
+                else
+                {
+                    WriteLog($"OpenOrder: {JsonConvert.SerializeObject(result.Data)}");
+                    SymbolModel.Points.Add((DateTime.UtcNow.ToOADate(), Decimal.ToDouble(SymbolModel.Price)));
+                }
             }
-            else
+            catch (Exception eX)
             {
-                WriteLog($"OpenOrder: {JsonConvert.SerializeObject(result.Data)}");
-                SymbolModel.Points.Add((DateTime.UtcNow.ToOADate() ,Decimal.ToDouble(SymbolModel.Price)));
+                WriteLog($"OpenOrder {eX.Message}");
             }
         }
         private decimal RoundQuantity(decimal quantity)
@@ -179,9 +207,9 @@ namespace BinanceFuturesBot.ViewModels
                     return result.Data.ToList();
                 }
             }
-            catch (Exception e)
+            catch (Exception eX)
             {
-                WriteLog($"Klines {e.Message}");
+                WriteLog($"Klines {eX.Message}");
             }
             return null;
         }

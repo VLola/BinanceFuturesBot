@@ -14,6 +14,16 @@ namespace BinanceFuturesBot.Models
         }
         public ObservableCollection<SymbolDetailViewModel> Settings { get; set; } = new();
 
+        private SymbolDetailViewModel _selectedSymbol { get; set; }
+        public SymbolDetailViewModel SelectedSymbol
+        {
+            get { return _selectedSymbol; }
+            set
+            {
+                _selectedSymbol = value;
+                OnPropertyChanged("SelectedSymbol");
+            }
+        }
         private int _leverage { get; set; } = 20;
         public int Leverage
         {

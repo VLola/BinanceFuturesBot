@@ -15,6 +15,16 @@ namespace BinanceFuturesBot.Models
         public List<IBinanceKline> Klines { get; set; } = new();
         public List<(double x, double y)> Points { get; set; } = new();
 
+        private bool _isRun { get; set; } = true;
+        public bool IsRun
+        {
+            get { return _isRun; }
+            set
+            {
+                _isRun = value;
+                OnPropertyChanged("IsRun");
+            }
+        }
         private int _open { get; set; } = 14;
         public int Open
         {
