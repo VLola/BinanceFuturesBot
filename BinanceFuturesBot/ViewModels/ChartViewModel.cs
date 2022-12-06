@@ -55,7 +55,7 @@ namespace BinanceFuturesBot.ViewModels
                         ChartModel.MyPlot.Plot.Remove(financePlot);
                         ChartModel.MyPlot.Plot.Remove(scatterPlot);
                         financePlot = ChartModel.MyPlot.Plot.AddCandlesticks(oHLCs.ToArray());
-                        scatterPlot = ChartModel.MyPlot.Plot.AddScatterPoints(xs: symbolModel.Points.Select(it => it.x).ToArray(), ys: symbolModel.Points.Select(it => it.y).ToArray(), color: Color.Orange, markerSize: 7);
+                        if(symbolModel.Points.Count > 0) scatterPlot = ChartModel.MyPlot.Plot.AddScatterPoints(xs: symbolModel.Points.Select(it => it.x).ToArray(), ys: symbolModel.Points.Select(it => it.y).ToArray(), color: Color.Orange, markerSize: 7);
                         ChartModel.MyPlot.Plot.RenderUnlock();
                         ChartModel.MyPlot.Refresh();
                     }));
