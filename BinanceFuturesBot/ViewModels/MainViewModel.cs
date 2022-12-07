@@ -1,4 +1,5 @@
-﻿using Binance.Net.Objects.Models.Futures;
+﻿using Binance.Net.Enums;
+using Binance.Net.Objects.Models.Futures;
 using BinanceFuturesBot.Models;
 using CryptoExchange.Net.CommonObjects;
 using Newtonsoft.Json;
@@ -92,7 +93,7 @@ namespace BinanceFuturesBot.ViewModels
                     await Task.Delay(10000);
                     if (!symbolViewModel.SymbolModel.IsOpenOrder)
                     {
-                        await symbolViewModel.CloseBetAsync();
+                        await CloseBetAsync(symbolViewModel.SymbolModel.Name);
                     }
                 }
                 catch (Exception ex)
@@ -100,6 +101,59 @@ namespace BinanceFuturesBot.ViewModels
                     WriteLog($"Failed CloseOrder: {ex.Message}");
                 }
             });
+        }
+        private async Task CloseBetAsync(string name)
+        {
+            await Task.Run(async () =>
+            {
+                try
+                {
+                    var result = await LoginViewModel.Client.UsdFuturesApi.Account.GetPositionInformationAsync(symbol: name);
+                    if (!result.Success)
+                    {
+                        WriteLog($"Failed CloseBet: {result.Error?.Message}");
+                    }
+                    else
+                    {
+                        WriteLog("CloseBet:");
+                        decimal quantity = result.Data.ToList()[0].Quantity;
+                        if (quantity != 0m)
+                        {
+                            if (quantity > 0m)
+                            {
+                                OpenOrder(name, OrderSide.Sell, quantity);
+                            }
+                            else
+                            {
+                                OpenOrder(name, OrderSide.Buy, -quantity);
+                            }
+                        }
+                    }
+                }
+                catch (Exception eX)
+                {
+                    WriteLog($"CloseBetAsync {eX.Message}");
+                }
+            });
+        }
+        public void OpenOrder(string name, OrderSide side, decimal quantity)
+        {
+            try
+            {
+                var result = LoginViewModel.Client.UsdFuturesApi.Trading.PlaceOrderAsync(symbol: name, side: side, type: FuturesOrderType.Market, quantity: quantity, positionSide: PositionSide.Both).Result;
+                if (!result.Success)
+                {
+                    WriteLog($"Failed OpenOrder: {result.Error.Message}");
+                }
+                else
+                {
+                    WriteLog($"OpenOrder: {JsonConvert.SerializeObject(result.Data)}");
+                }
+            }
+            catch (Exception eX)
+            {
+                WriteLog($"OpenOrder {eX.Message}");
+            }
         }
         private async void RunAllSymbolsAsync()
         {
