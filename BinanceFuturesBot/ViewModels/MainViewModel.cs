@@ -66,7 +66,7 @@ namespace BinanceFuturesBot.ViewModels
                                 if (item.Quantity != 0m)
                                 {
                                     SymbolViewModel? symbol = MainModel.Symbols.FirstOrDefault(it => it.SymbolModel.Name == item.Symbol);
-                                    if (symbol != null)
+                                    if (symbol != null && symbol.SymbolModel.IsRun)
                                     {
                                         CloseOrder(symbol);
                                     }
