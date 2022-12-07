@@ -1,5 +1,7 @@
 ﻿using Binance.Net.Objects.Models.Futures;
 using BinanceFuturesBot.Models;
+using CryptoExchange.Net.CommonObjects;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,6 +30,10 @@ namespace BinanceFuturesBot.ViewModels
             {
                 ChartViewModel.Load(MainModel.SelectedSymbol.SymbolModel);
             }
+            else if (e.PropertyName == "IsRun")
+            {
+                RunAllSymbolsAsync();
+            }
         }
 
         private void LoginModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -36,9 +42,81 @@ namespace BinanceFuturesBot.ViewModels
             {
                 if(LoginViewModel.LoginModel.IsLoginBinance)
                 {
+                    CheckOpenOrders();
                     GetSumbolName();
                 }
             }
+        }
+        private async void CheckOpenOrders()
+        {
+            await Task.Run(async() => {
+                while (true)
+                {
+                    try
+                    {
+                        var result = await LoginViewModel.Client.UsdFuturesApi.Account.GetPositionInformationAsync();
+                        if (!result.Success)
+                        {
+                            WriteLog($"Failed CheckOpenOrders: {result.Error?.Message}");
+                        }
+                        else
+                        {
+                            foreach (var item in result.Data.ToList())
+                            {
+                                if (item.Quantity != 0m)
+                                {
+                                    SymbolViewModel? symbol = MainModel.Symbols.FirstOrDefault(it => it.SymbolModel.Name == item.Symbol);
+                                    if (symbol != null)
+                                    {
+                                        CloseOrder(symbol);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteLog($"CheckOpenOrders: {ex.Message}");
+                    }
+                    
+                    await Task.Delay(60000);
+                }
+            });
+        }
+        private async void CloseOrder(SymbolViewModel symbolViewModel)
+        {
+            await Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(10000);
+                    if (!symbolViewModel.SymbolModel.IsOpenOrder)
+                    {
+                        await symbolViewModel.CloseBetAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    WriteLog($"Failed CloseOrder: {ex.Message}");
+                }
+            });
+        }
+        private async void RunAllSymbolsAsync()
+        {
+            await Task.Run(() => {
+                try
+                {
+                    bool isRun = MainModel.IsRun;
+                    foreach (var item in MainModel.Symbols)
+                    {
+                        item.SymbolModel.IsRun = isRun;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    WriteLog($"RunAllSymbolsAsync: {ex.Message}");
+                }
+            });
         }
         private async void GetSumbolName()
         {

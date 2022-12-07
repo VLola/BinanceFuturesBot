@@ -23,5 +23,15 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("SelectedSymbol");
             }
         }
+        private bool _isRun { get; set; }
+        public bool IsRun
+        {
+            get { return _isRun; }
+            set
+            {
+                _isRun = value;
+                OnPropertyChanged("IsRun");
+            }
+        }
     }
 }

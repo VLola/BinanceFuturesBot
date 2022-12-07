@@ -132,7 +132,7 @@ namespace BinanceFuturesBot.ViewModels
             decimal quantity = RoundQuantity(SymbolModel.Usdt / SymbolModel.Price);
             OpenOrder(OrderSide.Sell, quantity);
         }
-        private async Task CloseBetAsync()
+        public async Task CloseBetAsync()
         {
             await Task.Run(async () =>
             {
