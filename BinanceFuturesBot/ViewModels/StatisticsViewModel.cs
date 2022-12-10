@@ -40,20 +40,47 @@ namespace BinanceFuturesBot.ViewModels
                         StatisticsModel.Statistics.Clear();
                     }));
                     List<Task> tasks = new();
-                    foreach (var symbol in StatisticsModel.Symbols)
+                    DateTime startTime = StatisticsModel.StartTime;
+                    DateTime endTime;
+
+                    if (StatisticsModel.IsEndTime)
                     {
-                        Task task = GetUserTradesAsync(symbol);
-                        tasks.Add(task);
+                        endTime = StatisticsModel.EndTime;
                     }
-                    Task.WaitAll(tasks.ToArray());
-                    StatisticsModel.ListStatistics.Sort((x, y) => y.Time.CompareTo(x.Time));
-                    foreach (var item in StatisticsModel.ListStatistics)
-                    {
-                        App.Current.Dispatcher.Invoke(new Action(() =>
+                    else {
+                        if(DateTime.UtcNow - startTime > TimeSpan.FromDays(7))
                         {
-                            StatisticsModel.Statistics.Add(item);
-                            StatisticsModel.SumTotal += item.Total;
-                        }));
+                            endTime = startTime.AddDays(6);
+                        }
+                        else
+                        {
+                            endTime = DateTime.UtcNow;
+                        }
+                        
+                    }
+
+                    if(endTime > startTime && endTime <= DateTime.UtcNow && (endTime - startTime) <= TimeSpan.FromDays(7)) {
+                        foreach (var symbol in StatisticsModel.Symbols)
+                        {
+                            Task task = GetUserTradesAsync(symbol, startTime, endTime);
+                            tasks.Add(task);
+                        }
+                        Task.WaitAll(tasks.ToArray());
+                        StatisticsModel.ListStatistics.Sort((x, y) => y.Time.CompareTo(x.Time));
+                        foreach (var item in StatisticsModel.ListStatistics)
+                        {
+                            App.Current.Dispatcher.Invoke(new Action(() =>
+                            {
+                                StatisticsModel.Statistics.Add(item);
+                                StatisticsModel.SumTotal += item.Total;
+                            }));
+                        }
+                        MessageBox.Show("Ok");
+                    }
+                    else
+                    {
+                        if((endTime - startTime) >= TimeSpan.FromDays(7)) MessageBox.Show("Maximum time interval is 7 days.");
+                        else MessageBox.Show("Error");
                     }
                 });
             }
@@ -62,14 +89,14 @@ namespace BinanceFuturesBot.ViewModels
                 WriteLog($"ShowStatistics: {ex.Message}");
             }
         }
-        private async Task GetUserTradesAsync(string name)
+        private async Task GetUserTradesAsync(string symbol, DateTime startTime, DateTime endTime)
         {
             try
             {
                 await Task.Run(async () =>
                 {
-                    var result = await Client.UsdFuturesApi.Trading.GetUserTradesAsync(name);
-                    if (!result.Success) WriteLog($"Failed GetUserTradesAsync {name}: {result.Error?.Message}");
+                    var result = await Client.UsdFuturesApi.Trading.GetUserTradesAsync(symbol: symbol, startTime: startTime, endTime: endTime);
+                    if (!result.Success) WriteLog($"Failed GetUserTradesAsync {symbol}: {result.Error?.Message}");
                     else
                     {
                         if(result.Data.ToList().Count > 0)
@@ -100,7 +127,7 @@ namespace BinanceFuturesBot.ViewModels
             }
             catch (Exception ex)
             {
-                WriteLog($"GetUserTradesAsync {name}: {ex.Message}");
+                WriteLog($"GetUserTradesAsync {symbol}: {ex.Message}");
             }
         }
         private void WriteLog(string text)

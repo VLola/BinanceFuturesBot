@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -36,6 +37,36 @@ namespace BinanceFuturesBot.Models
             {
                 _isPositive = value;
                 OnPropertyChanged("IsPositive");
+            }
+        }
+        private DateTime _startTime { get; set; } = DateTime.UtcNow.AddDays(-6);
+        public DateTime StartTime
+        {
+            get { return _startTime; }
+            set
+            {
+                _startTime = value;
+                OnPropertyChanged("StartTime");
+            }
+        }
+        private DateTime _endTime { get; set; } = DateTime.UtcNow;
+        public DateTime EndTime
+        {
+            get { return _endTime; }
+            set
+            {
+                _endTime = value;
+                OnPropertyChanged("EndTime");
+            }
+        }
+        private bool _isEndTime { get; set; }
+        public bool IsEndTime
+        {
+            get { return _isEndTime; }
+            set
+            {
+                _isEndTime = value;
+                OnPropertyChanged("IsEndTime");
             }
         }
     }
