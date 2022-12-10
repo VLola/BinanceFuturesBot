@@ -30,6 +30,11 @@
                         <local:SettingsView/>
                     </Grid>
                 </TabItem>
+                <TabItem Header="Statistics">
+                    <Grid>
+                        <local:StatisticsView/>
+                    </Grid>
+                </TabItem>
             </TabControl>
         </Grid>
     </Grid>

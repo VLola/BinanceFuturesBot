@@ -17,6 +17,7 @@ namespace BinanceFuturesBot.ViewModels
         public MainModel MainModel { get; set; } = new();
         public LoginViewModel LoginViewModel { get; set; } = new();
         public SettingsViewModel SettingsViewModel { get; set; } = new();
+        public StatisticsViewModel StatisticsViewModel { get; set; } = new();
         public ChartViewModel ChartViewModel { get; set; } = new();
         public MainViewModel()
         {
@@ -33,7 +34,37 @@ namespace BinanceFuturesBot.ViewModels
             }
             else if (e.PropertyName == "IsRun")
             {
-                RunAllSymbolsAsync();
+                Task.Run(() => {
+                    try
+                    {
+                        bool isRun = MainModel.IsRun;
+                        foreach (var item in MainModel.Symbols)
+                        {
+                            item.SymbolModel.IsRun = isRun;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteLog($"MainModel_PropertyChanged IsRun: {ex.Message}");
+                    }
+                });
+            }
+            else if (e.PropertyName == "Usdt")
+            {
+                Task.Run(() => {
+                    try
+                    {
+                        decimal usdt = MainModel.Usdt;
+                        foreach (var item in MainModel.Symbols)
+                        {
+                            item.SymbolModel.Usdt = usdt;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteLog($"MainModel_PropertyChanged Usdt: {ex.Message}");
+                    }
+                });
             }
         }
 
@@ -154,23 +185,6 @@ namespace BinanceFuturesBot.ViewModels
             {
                 WriteLog($"OpenOrder {eX.Message}");
             }
-        }
-        private async void RunAllSymbolsAsync()
-        {
-            await Task.Run(() => {
-                try
-                {
-                    bool isRun = MainModel.IsRun;
-                    foreach (var item in MainModel.Symbols)
-                    {
-                        item.SymbolModel.IsRun = isRun;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    WriteLog($"RunAllSymbolsAsync: {ex.Message}");
-                }
-            });
         }
         private async void GetSumbolName()
         {

@@ -14,9 +14,13 @@
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="50"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <CheckBox Content="Run all" IsChecked="{Binding Path=MainModel.IsRun}"/>
+            <CheckBox Grid.Column="0" Content="Run all" IsChecked="{Binding Path=MainModel.IsRun}"/>
+            <TextBlock Grid.Column="1" Text="Usdt:"/>
+            <TextBox Grid.Column="2" Text="{Binding Path=MainModel.Usdt}"/>
         </Grid>
         <ListView Grid.Row="1" ItemsSource="{Binding Path=MainModel.Symbols}" SelectedItem="{Binding Path=MainModel.SelectedSymbol}">
             <ListView.View>
@@ -33,6 +37,7 @@
                     <GridViewColumn Width="50" Header="Open" DisplayMemberBinding="{Binding Path=SymbolModel.Open}"/>
                     <GridViewColumn Width="50" Header="Close" DisplayMemberBinding="{Binding Path=SymbolModel.Close}"/>
                     <GridViewColumn Width="50" Header="SL" DisplayMemberBinding="{Binding Path=SymbolModel.StopLoss}"/>
+                    <GridViewColumn Width="50" Header="Usdt" DisplayMemberBinding="{Binding Path=SymbolModel.Usdt}"/>
                 </GridView>
             </ListView.View>
         </ListView>
