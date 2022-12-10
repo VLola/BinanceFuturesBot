@@ -37,12 +37,14 @@ namespace BinanceFuturesBot.ViewModels
                         StatisticsModel.Statistics.Add(new BetModel()
                         {
                             Time = item.Timestamp,
+                            Symbol = item.Symbol,
                             Price = item.Price,
                             Quantity = item.Quantity,
                             Usdt = item.Quantity * item.Price,
                             Profit = item.RealizedPnl,
                             Commission = item.Fee,
-                            Total = item.RealizedPnl - item.Fee
+                            Total = item.RealizedPnl - item.Fee,
+                            OrderSide = item.Side
                         });
                     }
                 }
