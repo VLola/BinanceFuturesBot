@@ -74,8 +74,10 @@ namespace BinanceFuturesBot.ViewModels
             {
                 if(LoginViewModel.LoginModel.IsLoginBinance)
                 {
-                    CheckOpenOrders();
-                    GetSumbolName();
+                    StatisticsViewModel.Client = LoginViewModel.Client;
+                    // ---------------------------------------------------------------------------------------------------------------------------------------------
+                    //CheckOpenOrders();
+                    //GetSumbolName();
                 }
             }
         }

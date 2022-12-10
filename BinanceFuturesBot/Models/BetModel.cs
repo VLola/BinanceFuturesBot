@@ -4,10 +4,8 @@ namespace BinanceFuturesBot.Models
 {
     public class BetModel
     {
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-        public decimal Open { get; set; }
-        public decimal Close { get; set; }
+        public DateTime Time { get; set; }
+        public decimal Price { get; set; }
         public decimal Quantity { get; set; }
         public decimal Usdt { get; set; }
         public decimal Profit { get; set; }

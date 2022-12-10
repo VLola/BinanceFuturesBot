@@ -17,7 +17,7 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button Content="Show"/>
+            <Button Content="Show" Command="{Binding Path=StatisticsViewModel.ShowStatisticsCommand}"/>
         </Grid>
         <ListView Grid.Row="1" ItemsSource="{Binding Path=StatisticsViewModel.StatisticsModel.Statistics}">
             <ListView.View>
