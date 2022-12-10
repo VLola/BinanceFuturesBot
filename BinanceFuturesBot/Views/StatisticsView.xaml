@@ -13,6 +13,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
@@ -49,5 +50,14 @@
                 </GridView>
             </ListView.View>
         </ListView>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="1" Text="Total:"/>
+            <TextBlock Grid.Column="2" Text="{Binding Path=StatisticsViewModel.StatisticsModel.SumTotal}" Style="{StaticResource styleSumTotal}"/>
+        </Grid>
     </Grid>
 </UserControl>

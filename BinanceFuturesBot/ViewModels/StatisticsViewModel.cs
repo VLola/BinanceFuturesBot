@@ -46,6 +46,7 @@ namespace BinanceFuturesBot.ViewModels
                             Total = item.RealizedPnl - item.Fee,
                             OrderSide = item.Side
                         });
+                        StatisticsModel.SumTotal += (item.RealizedPnl - item.Fee);
                     }
                 }
             }
