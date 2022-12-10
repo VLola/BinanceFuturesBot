@@ -75,9 +75,8 @@ namespace BinanceFuturesBot.ViewModels
                 if(LoginViewModel.LoginModel.IsLoginBinance)
                 {
                     StatisticsViewModel.Client = LoginViewModel.Client;
-                    // ---------------------------------------------------------------------------------------------------------------------------------------------
-                    //CheckOpenOrders();
-                    //GetSumbolName();
+                    CheckOpenOrders();
+                    GetSumbolName();
                 }
             }
         }
@@ -225,6 +224,10 @@ namespace BinanceFuturesBot.ViewModels
             App.Current.Dispatcher.Invoke(new Action(() =>
             {
                 MainModel.Symbols.Add(symbolViewModel);
+            })); 
+            App.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                StatisticsViewModel.StatisticsModel.Symbols.Add(symbol.Name);
             }));
         }
         private List<BinanceFuturesUsdtSymbol> ListSymbols()

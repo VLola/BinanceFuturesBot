@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -11,7 +12,9 @@ namespace BinanceFuturesBot.Models
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
+        public List<BetModel> ListStatistics { get; set; } = new();
         public ObservableCollection<BetModel> Statistics { get; set; } = new();
+        public List<string> Symbols { get; set; } = new();
 
         private decimal _sumTotal { get; set; }
         public decimal SumTotal
