@@ -93,8 +93,7 @@ namespace BinanceFuturesBot.ViewModels
                     }
                     else
                     {
-                        if((endTime - startTime) >= TimeSpan.FromDays(7)) MessageBox.Show("Maximum time interval is 7 days.");
-                        else MessageBox.Show("Error");
+                        MessageBox.Show("Error");
                     }
                 });
             }
