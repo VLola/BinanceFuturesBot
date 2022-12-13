@@ -51,15 +51,6 @@ namespace BinanceFuturesBot.ViewModels
                     else
                     {
                         endTime = DateTime.UtcNow;
-                        //if (DateTime.UtcNow - startTime > TimeSpan.FromDays(7))
-                        //{
-                        //    endTime = startTime.AddDays(6);
-                        //}
-                        //else
-                        //{
-                        //    endTime = DateTime.UtcNow;
-                        //}
-                        
                     }
                     if (endTime > DateTime.UtcNow)
                     {
