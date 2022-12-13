@@ -38,6 +38,7 @@ namespace BinanceFuturesBot.ViewModels
                     {
                         StatisticsModel.ListStatistics.Clear();
                         StatisticsModel.Statistics.Clear();
+                        StatisticsModel.SumTotal = 0m;
                     }));
                     List<Task> tasks = new();
                     DateTime startTime = StatisticsModel.StartTime;
@@ -47,24 +48,46 @@ namespace BinanceFuturesBot.ViewModels
                     {
                         endTime = StatisticsModel.EndTime;
                     }
-                    else {
-                        if(DateTime.UtcNow - startTime > TimeSpan.FromDays(7))
-                        {
-                            endTime = startTime.AddDays(6);
-                        }
-                        else
-                        {
-                            endTime = DateTime.UtcNow;
-                        }
+                    else
+                    {
+                        endTime = DateTime.UtcNow;
+                        //if (DateTime.UtcNow - startTime > TimeSpan.FromDays(7))
+                        //{
+                        //    endTime = startTime.AddDays(6);
+                        //}
+                        //else
+                        //{
+                        //    endTime = DateTime.UtcNow;
+                        //}
                         
                     }
+                    if (endTime > DateTime.UtcNow)
+                    {
+                        endTime = DateTime.UtcNow;
+                        StatisticsModel.EndTime = endTime;
+                    }
 
-                    if(endTime > startTime && endTime <= DateTime.UtcNow && (endTime - startTime) <= TimeSpan.FromDays(7)) {
-                        foreach (var symbol in StatisticsModel.Symbols)
+                    if(endTime > startTime) {
+                        while (true)
                         {
-                            Task task = GetUserTradesAsync(symbol, startTime, endTime);
-                            tasks.Add(task);
+                            if ((endTime - startTime) <= TimeSpan.FromDays(7))
+                            {
+                                foreach (var symbol in StatisticsModel.Symbols)
+                                {
+                                    Task task = GetUserTradesAsync(symbol, startTime, endTime);
+                                    tasks.Add(task);
+                                }
+                                break;
+                            }
+
+                            foreach (var symbol in StatisticsModel.Symbols)
+                            {
+                                Task task = GetUserTradesAsync(symbol, startTime, startTime.AddDays(7));
+                                tasks.Add(task);
+                            }
+                            startTime = startTime.AddDays(7);
                         }
+
                         Task.WaitAll(tasks.ToArray());
                         StatisticsModel.ListStatistics.Sort((x, y) => y.Time.CompareTo(x.Time));
                         foreach (var item in StatisticsModel.ListStatistics)
