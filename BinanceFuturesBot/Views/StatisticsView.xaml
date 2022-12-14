@@ -38,24 +38,24 @@
         <ListView Grid.Row="1" ItemsSource="{Binding Path=StatisticsViewModel.StatisticsModel.Statistics}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="150" Header="Time" DisplayMemberBinding="{Binding Path=Time}"/>
-                    <GridViewColumn Width="100" Header="Symbol" DisplayMemberBinding="{Binding Path=Symbol}"/>
-                    <GridViewColumn Width="100" Header="Price" DisplayMemberBinding="{Binding Path=Price}"/>
-                    <GridViewColumn Width="50" Header="Quantity" DisplayMemberBinding="{Binding Path=Quantity}"/>
-                    <GridViewColumn Width="50" Header="Usdt" DisplayMemberBinding="{Binding Path=Usdt, StringFormat={}{0:N1}}"/>
+                    <GridViewColumn Width="150" Header="Time" DisplayMemberBinding="{Binding Path=BetModel.Time}"/>
+                    <GridViewColumn Width="100" Header="Symbol" DisplayMemberBinding="{Binding Path=BetModel.Symbol}"/>
+                    <GridViewColumn Width="100" Header="Price" DisplayMemberBinding="{Binding Path=BetModel.Price}"/>
+                    <GridViewColumn Width="50" Header="Quantity" DisplayMemberBinding="{Binding Path=BetModel.Quantity}"/>
+                    <GridViewColumn Width="50" Header="Usdt" DisplayMemberBinding="{Binding Path=BetModel.Usdt, StringFormat={}{0:N1}}"/>
                     <GridViewColumn Header="OrderSide" Width="Auto">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate >
-                                <TextBlock Text="{Binding Path=OrderSide}" Style="{StaticResource styleOrderSide}"/>
+                                <TextBlock Text="{Binding Path=BetModel.OrderSide}" Style="{StaticResource styleOrderSide}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Width="70" Header="Commission" DisplayMemberBinding="{Binding Path=Commission, StringFormat={}{0:N4}}"/>
-                    <GridViewColumn Width="70" Header="Profit" DisplayMemberBinding="{Binding Path=Profit, StringFormat={}{0:N4}}"/>
+                    <GridViewColumn Width="70" Header="Commission" DisplayMemberBinding="{Binding Path=BetModel.Commission, StringFormat={}{0:N4}}"/>
+                    <GridViewColumn Width="70" Header="Profit" DisplayMemberBinding="{Binding Path=BetModel.Profit, StringFormat={}{0:N4}}"/>
                     <GridViewColumn Header="Total" Width="70">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate >
-                                <TextBlock Text="{Binding Path=Total, StringFormat={}{0:N4}}" Style="{StaticResource styleTotal}"/>
+                                <TextBlock Text="{Binding Path=BetModel.Total, StringFormat={}{0:N4}}" Style="{StaticResource styleTotal}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

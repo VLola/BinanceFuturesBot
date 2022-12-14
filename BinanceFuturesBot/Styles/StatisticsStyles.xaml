@@ -4,7 +4,7 @@
     <Style TargetType="TextBlock" x:Key="styleOrderSide">
         <Setter Property="Foreground" Value="Red"/>
         <Style.Triggers>
-            <DataTrigger Binding="{Binding Path=OrderSide}" Value="Buy" >
+            <DataTrigger Binding="{Binding Path=BetModel.OrderSide}" Value="Buy" >
                 <Setter Property="Foreground" Value="Green"/>
             </DataTrigger>
         </Style.Triggers>
@@ -12,7 +12,7 @@
     <Style TargetType="TextBlock" x:Key="styleTotal">
         <Setter Property="Foreground" Value="Red"/>
         <Style.Triggers>
-            <DataTrigger Binding="{Binding Path=IsPositive}" Value="True" >
+            <DataTrigger Binding="{Binding Path=BetModel.IsPositive}" Value="True" >
                 <Setter Property="Foreground" Value="Green"/>
             </DataTrigger>
         </Style.Triggers>

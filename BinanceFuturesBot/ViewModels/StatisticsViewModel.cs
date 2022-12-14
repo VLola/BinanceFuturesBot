@@ -80,13 +80,13 @@ namespace BinanceFuturesBot.ViewModels
                         }
 
                         Task.WaitAll(tasks.ToArray());
-                        StatisticsModel.ListStatistics.Sort((x, y) => y.Time.CompareTo(x.Time));
+                        StatisticsModel.ListStatistics.Sort((x, y) => y.BetModel.Time.CompareTo(x.BetModel.Time));
                         foreach (var item in StatisticsModel.ListStatistics)
                         {
                             App.Current.Dispatcher.Invoke(new Action(() =>
                             {
                                 StatisticsModel.Statistics.Add(item);
-                                StatisticsModel.SumTotal += item.Total;
+                                StatisticsModel.SumTotal += item.BetModel.Total;
                             }));
                         }
                         MessageBox.Show("Ok");
@@ -119,19 +119,7 @@ namespace BinanceFuturesBot.ViewModels
 
                                 App.Current.Dispatcher.Invoke(new Action(() =>
                                 {
-                                    StatisticsModel.ListStatistics.Add(new BetModel()
-                                    {
-                                        Time = item.Timestamp,
-                                        Symbol = item.Symbol,
-                                        Price = item.Price,
-                                        Quantity = item.Quantity,
-                                        Usdt = item.Quantity * item.Price,
-                                        Profit = item.RealizedPnl,
-                                        Commission = item.Fee,
-                                        Total = (item.RealizedPnl - item.Fee),
-                                        OrderSide = item.Side,
-                                        Client = Client
-                                    });
+                                    StatisticsModel.ListStatistics.Add(new BetViewModel(item, Client));
                                 }));
                             }
                         }
