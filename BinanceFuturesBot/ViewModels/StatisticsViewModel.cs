@@ -129,7 +129,8 @@ namespace BinanceFuturesBot.ViewModels
                                         Profit = item.RealizedPnl,
                                         Commission = item.Fee,
                                         Total = (item.RealizedPnl - item.Fee),
-                                        OrderSide = item.Side
+                                        OrderSide = item.Side,
+                                        Client = Client
                                     });
                                 }));
                             }

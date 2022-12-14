@@ -59,6 +59,13 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
+                    <GridViewColumn Header="Show" Width="70">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate >
+                                <Button Content="Chart" Command="{Binding Path=ShowChartCommand}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>
