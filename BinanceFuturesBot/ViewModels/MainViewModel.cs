@@ -66,6 +66,57 @@ namespace BinanceFuturesBot.ViewModels
                     }
                 });
             }
+            else if (e.PropertyName == "StopLoss")
+            {
+                Task.Run(() => {
+                    try
+                    {
+                        decimal stopLoss = MainModel.StopLoss;
+                        foreach (var item in MainModel.Symbols)
+                        {
+                            item.SymbolModel.StopLoss = stopLoss;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteLog($"MainModel_PropertyChanged StopLoss: {ex.Message}");
+                    }
+                });
+            }
+            else if (e.PropertyName == "Open")
+            {
+                Task.Run(() => {
+                    try
+                    {
+                        int open = MainModel.Open;
+                        foreach (var item in MainModel.Symbols)
+                        {
+                            item.SymbolModel.Open = open;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteLog($"MainModel_PropertyChanged Open: {ex.Message}");
+                    }
+                });
+            }
+            else if (e.PropertyName == "Close")
+            {
+                Task.Run(() => {
+                    try
+                    {
+                        int close = MainModel.Close;
+                        foreach (var item in MainModel.Symbols)
+                        {
+                            item.SymbolModel.Close = close;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteLog($"MainModel_PropertyChanged Close: {ex.Message}");
+                    }
+                });
+            }
         }
 
         private void LoginModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
