@@ -1,4 +1,5 @@
-﻿using Binance.Net.Interfaces;
+﻿using Binance.Net.Enums;
+using Binance.Net.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -146,6 +147,16 @@ namespace BinanceFuturesBot.Models
             {
                 _priceStopLoss = value;
                 OnPropertyChanged("PriceStopLoss");
+            }
+        }
+        private KlineInterval _interval { get; set; } = KlineInterval.OneMinute;
+        public KlineInterval Interval
+        {
+            get { return _interval; }
+            set
+            {
+                _interval = value;
+                OnPropertyChanged("Interval");
             }
         }
     }

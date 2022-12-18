@@ -1,4 +1,5 @@
-﻿using BinanceFuturesBot.ViewModels;
+﻿using Binance.Net.Enums;
+using BinanceFuturesBot.ViewModels;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -13,6 +14,13 @@ namespace BinanceFuturesBot.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
         public ObservableCollection<SymbolViewModel> Symbols { get; set; } = new();
+        public ObservableCollection<KlineInterval> Intervals { get; set; } = new();
+        public MainModel() {
+            Intervals.Add(KlineInterval.OneMinute);
+            Intervals.Add(KlineInterval.ThreeMinutes);
+            Intervals.Add(KlineInterval.FiveMinutes);
+            Intervals.Add(KlineInterval.FifteenMinutes);
+        }
         private SymbolViewModel _selectedSymbol { get; set; }
         public SymbolViewModel SelectedSymbol
         {
@@ -71,6 +79,16 @@ namespace BinanceFuturesBot.Models
             {
                 _close = value;
                 OnPropertyChanged("Close");
+            }
+        }
+        private KlineInterval _interval { get; set; } = KlineInterval.OneMinute;
+        public KlineInterval Interval
+        {
+            get { return _interval; }
+            set
+            {
+                _interval = value;
+                OnPropertyChanged("Interval");
             }
         }
     }

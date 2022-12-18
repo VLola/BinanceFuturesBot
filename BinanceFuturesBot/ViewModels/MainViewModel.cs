@@ -1,5 +1,6 @@
 ﻿using Binance.Net.Enums;
 using Binance.Net.Objects.Models.Futures;
+using BinanceFuturesBot.Command;
 using BinanceFuturesBot.Models;
 using CryptoExchange.Net.CommonObjects;
 using Newtonsoft.Json;
@@ -19,13 +20,38 @@ namespace BinanceFuturesBot.ViewModels
         public SettingsViewModel SettingsViewModel { get; set; } = new();
         public StatisticsViewModel StatisticsViewModel { get; set; } = new();
         public ChartViewModel ChartViewModel { get; set; } = new();
+        private RelayCommand? _startCommand;
+        public RelayCommand StartCommand
+        {
+            get
+            {
+                return _startCommand ?? (_startCommand = new RelayCommand(obj => {
+                    StartAsync();
+                }));
+            }
+        }
         public MainViewModel()
         {
             if (!Directory.Exists(_pathLog)) Directory.CreateDirectory(_pathLog);
             LoginViewModel.LoginModel.PropertyChanged += LoginModel_PropertyChanged;
             MainModel.PropertyChanged += MainModel_PropertyChanged;
         }
-
+        private async void StartAsync()
+        {
+            await Task.Run(() => {
+                try
+                {
+                    foreach (var item in MainModel.Symbols)
+                    {
+                        item.StartAsync(MainModel.Interval);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    WriteLog($"StartAsync: {ex.Message}");
+                }
+            });
+        }
         private void MainModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "SelectedSymbol")

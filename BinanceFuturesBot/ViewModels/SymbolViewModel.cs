@@ -50,7 +50,6 @@ namespace BinanceFuturesBot.ViewModels
             SymbolModel.TickSize = symbol.PriceFilter.TickSize;
             Client = client;
             SocketClient = socketClient;
-            Load();
             SymbolModel.PropertyChanged += SymbolModel_PropertyChanged;
         }
 
@@ -69,11 +68,12 @@ namespace BinanceFuturesBot.ViewModels
             }
         }
 
-        private async void Load()
+        public async void StartAsync(KlineInterval klineInterval)
         {
             await Task.Run(() =>
             {
-                SymbolModel.Klines = Klines(KlineInterval.FiveMinutes, 50);
+                SymbolModel.Interval = klineInterval;
+                SymbolModel.Klines = Klines(SymbolModel.Interval, 50);
 
                 SymbolModel.Price = SymbolModel.Klines[SymbolModel.Klines.Count - 1].ClosePrice;
                 StartKlineAsync();
@@ -83,7 +83,7 @@ namespace BinanceFuturesBot.ViewModels
         {
             try
             {
-                var result = await SocketClient.UsdFuturesStreams.SubscribeToKlineUpdatesAsync(SymbolModel.Name, KlineInterval.FiveMinutes, Message =>
+                var result = await SocketClient.UsdFuturesStreams.SubscribeToKlineUpdatesAsync(SymbolModel.Name, SymbolModel.Interval, Message =>
                 {
                     SymbolModel.Price = Message.Data.Data.ClosePrice;
                     if (Message.Data.Data.OpenTime == SymbolModel.Klines[SymbolModel.Klines.Count - 1].OpenTime) UpdateKline(Message.Data.Data);

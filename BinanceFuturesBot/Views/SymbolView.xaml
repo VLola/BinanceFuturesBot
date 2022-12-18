@@ -22,6 +22,8 @@
                 <ColumnDefinition Width="50"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="50"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <CheckBox Grid.Column="0" Content="Run all" IsChecked="{Binding Path=MainModel.IsRun}"/>
@@ -33,6 +35,8 @@
             <TextBox Grid.Column="6" Text="{Binding Path=MainModel.Open}"/>
             <TextBlock Grid.Column="7" Text="Close:"/>
             <TextBox Grid.Column="8" Text="{Binding Path=MainModel.Close}"/>
+            <ComboBox Grid.Column="9" ItemsSource="{Binding Path=MainModel.Intervals}" SelectedItem="{Binding Path=MainModel.Interval}"/>
+            <Button Grid.Column="10" Content="Start" Command="{Binding Path=StartCommand}"/>
         </Grid>
         <ListView Grid.Row="1" ItemsSource="{Binding Path=MainModel.Symbols}" SelectedItem="{Binding Path=MainModel.SelectedSymbol}">
             <ListView.View>
