@@ -2,6 +2,7 @@
 using Binance.Net.Enums;
 using Binance.Net.Interfaces;
 using Binance.Net.Objects.Models.Futures;
+using BinanceFuturesBot.Command;
 using BinanceFuturesBot.Models;
 using CryptoExchange.Net.CommonObjects;
 using Newtonsoft.Json;
@@ -16,6 +17,28 @@ namespace BinanceFuturesBot.ViewModels
 {
     public class SymbolViewModel
     {
+        private RelayCommand? _openOrderCommand;
+        public RelayCommand OpenOrderCommand
+        {
+            get
+            {
+                return _openOrderCommand ?? (_openOrderCommand = new RelayCommand(obj => {
+                    int i = SymbolModel.Klines.Count - 1;
+                    SymbolModel.PriceStopLoss = RoundPrice(SymbolModel.Klines[i].ClosePrice + (SymbolModel.Klines[i].ClosePrice * (SymbolModel.StopLoss / 100)));
+                    OpenBet();
+                }));
+            }
+        }
+        private RelayCommand? _closeOrderCommand;
+        public RelayCommand CloseOrderCommand
+        {
+            get
+            {
+                return _closeOrderCommand ?? (_closeOrderCommand = new RelayCommand(obj => {
+                    CloseBetAsync();
+                }));
+            }
+        }
         private string _pathLog = $"{Directory.GetCurrentDirectory()}/log/";
         public BinanceClient? Client { get; set; }
         public BinanceSocketClient? SocketClient { get; set; }
@@ -39,7 +62,7 @@ namespace BinanceFuturesBot.ViewModels
                 {
                     if(SymbolModel.Price > SymbolModel.PriceStopLoss)
                     {
-                        CloseBetAsync();
+                        //CloseBetAsync();
                     }
                 }
             }
@@ -103,9 +126,9 @@ namespace BinanceFuturesBot.ViewModels
                     {
                         if (SymbolModel.Klines[i + 1].ClosePrice > SymbolModel.Klines[i + 1].OpenPrice)
                         {
-                            SymbolModel.PriceStopLoss = SymbolModel.Klines[i + 1].ClosePrice + (SymbolModel.Klines[i + 1].ClosePrice * (SymbolModel.StopLoss / 100));
+                            SymbolModel.PriceStopLoss = RoundPrice(SymbolModel.Klines[i + 1].ClosePrice + (SymbolModel.Klines[i + 1].ClosePrice * (SymbolModel.StopLoss / 100)));
                             SymbolModel.IsOpenOrder = true;
-                            StartStrategyAsync();
+                            OpenBetAsync();
                         }
                     }
                 }
@@ -115,7 +138,7 @@ namespace BinanceFuturesBot.ViewModels
                 }
             });
         }
-        private async void StartStrategyAsync()
+        private async void OpenBetAsync()
         {
             await Task.Run(async () =>
             {
@@ -151,11 +174,11 @@ namespace BinanceFuturesBot.ViewModels
                         {
                             if (quantity > 0m)
                             {
-                                OpenOrder(OrderSide.Sell, quantity);
+                                CloseOrder(OrderSide.Sell, quantity);
                             }
                             else
                             {
-                                OpenOrder(OrderSide.Buy, -quantity);
+                                CloseOrder(OrderSide.Buy, -quantity);
                             }
                         }
                     }
@@ -166,7 +189,29 @@ namespace BinanceFuturesBot.ViewModels
                 }
             });
         }
+
         public void OpenOrder(OrderSide side, decimal quantity)
+        {
+            try
+            {
+                var result = Client.UsdFuturesApi.Trading.PlaceOrderAsync(symbol: SymbolModel.Name, side: side, type: FuturesOrderType.Market, quantity: quantity, positionSide: PositionSide.Both).Result;
+                if (!result.Success)
+                {
+                    WriteLog($"Failed OpenOrder: {result.Error.Message}");
+                }
+                else
+                {
+                    OpenStopLoss(side, quantity);
+                    WriteLog($"OpenOrder: {JsonConvert.SerializeObject(result.Data)}");
+                    SymbolModel.Points.Add((DateTime.UtcNow.ToOADate(), Decimal.ToDouble(SymbolModel.Price)));
+                }
+            }
+            catch (Exception eX)
+            {
+                WriteLog($"OpenOrder {eX.Message}");
+            }
+        }
+        public void CloseOrder(OrderSide side, decimal quantity)
         {
             try
             {
@@ -180,10 +225,49 @@ namespace BinanceFuturesBot.ViewModels
                     WriteLog($"OpenOrder: {JsonConvert.SerializeObject(result.Data)}");
                     SymbolModel.Points.Add((DateTime.UtcNow.ToOADate(), Decimal.ToDouble(SymbolModel.Price)));
                 }
+                CancelAllOrdersAsync();
             }
             catch (Exception eX)
             {
                 WriteLog($"OpenOrder {eX.Message}");
+            }
+        }
+        private async void CancelAllOrdersAsync()
+        {
+            var result = await Client.UsdFuturesApi.Trading.CancelAllOrdersAsync(symbol: SymbolModel.Name);
+            if (!result.Success)
+            {
+                WriteLog($"Failed CancelAllOrdersAsync: {result.Error?.Message}");
+            }
+            else
+            {
+                WriteLog("CancelAllOrdersAsync");
+            }
+        }
+        public void OpenStopLoss(OrderSide side, decimal quantity)
+        {
+            try
+            {
+                if (side == OrderSide.Buy)
+                {
+                    side = OrderSide.Sell;
+                }
+                else {
+                    side = OrderSide.Buy;
+                }
+                var result = Client.UsdFuturesApi.Trading.PlaceOrderAsync(symbol: SymbolModel.Name, side: side, type: FuturesOrderType.StopMarket, quantity: quantity, positionSide: PositionSide.Both, stopPrice: SymbolModel.PriceStopLoss, closePosition: true).Result;
+                if (!result.Success)
+                {
+                    WriteLog($"Failed OpenStopLoss: {result.Error.Message}");
+                }
+                else
+                {
+                    WriteLog($"OpenStopLoss: {JsonConvert.SerializeObject(result.Data)}");
+                }
+            }
+            catch (Exception eX)
+            {
+                WriteLog($"OpenStopLoss {eX.Message}");
             }
         }
         private decimal RoundQuantity(decimal quantity)
@@ -195,6 +279,11 @@ namespace BinanceFuturesBot.ViewModels
             else if (SymbolModel.StepSize == 1m) quantity_final = Math.Round(quantity, 0);
             if (quantity_final < SymbolModel.MinQuantity) return SymbolModel.MinQuantity;
             return quantity_final;
+        }
+
+        private decimal RoundPrice(decimal price)
+        {
+            return Math.Round(price, SymbolModel.RoundPrice);
         }
         public List<IBinanceKline> Klines(KlineInterval interval, int limit)
         {

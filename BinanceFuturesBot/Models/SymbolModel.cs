@@ -103,6 +103,19 @@ namespace BinanceFuturesBot.Models
             {
                 _tickSize = value;
                 OnPropertyChanged("TickSize");
+                int index = value.ToString().IndexOf("1");
+                if (index == 0) RoundPrice = index;
+                else RoundPrice = index - 1;
+            }
+        }
+        private int _roundPrice { get; set; }
+        public int RoundPrice
+        {
+            get { return _roundPrice; }
+            set
+            {
+                _roundPrice = value;
+                OnPropertyChanged("RoundPrice");
             }
         }
         private decimal _price { get; set; }

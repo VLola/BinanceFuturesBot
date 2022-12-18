@@ -38,6 +38,20 @@
                     <GridViewColumn Width="50" Header="Close" DisplayMemberBinding="{Binding Path=SymbolModel.Close}"/>
                     <GridViewColumn Width="50" Header="SL" DisplayMemberBinding="{Binding Path=SymbolModel.StopLoss}"/>
                     <GridViewColumn Width="50" Header="Usdt" DisplayMemberBinding="{Binding Path=SymbolModel.Usdt}"/>
+                    <GridViewColumn Header="Open" Width="70">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate >
+                                <Button Content="Open" Command="{Binding Path=OpenOrderCommand}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Close" Width="70">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate >
+                                <Button Content="Close" Command="{Binding Path=CloseOrderCommand}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>
