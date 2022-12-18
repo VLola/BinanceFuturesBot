@@ -6,6 +6,9 @@
              xmlns:local="clr-namespace:BinanceFuturesBot.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary Source="/Styles/SymbolStyles.xaml"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -35,8 +38,8 @@
             <TextBox Grid.Column="6" Text="{Binding Path=MainModel.Open}"/>
             <TextBlock Grid.Column="7" Text="Close:"/>
             <TextBox Grid.Column="8" Text="{Binding Path=MainModel.Close}"/>
-            <ComboBox Grid.Column="9" ItemsSource="{Binding Path=MainModel.Intervals}" SelectedItem="{Binding Path=MainModel.Interval}"/>
-            <Button Grid.Column="10" Content="Start" Command="{Binding Path=StartCommand}"/>
+            <ComboBox Grid.Column="9" ItemsSource="{Binding Path=MainModel.Intervals}" SelectedItem="{Binding Path=MainModel.Interval}" Style="{StaticResource styleComboBox}"/>
+            <Button Grid.Column="10" Content="Start" Command="{Binding Path=StartCommand}" Style="{StaticResource styleButton}"/>
         </Grid>
         <ListView Grid.Row="1" ItemsSource="{Binding Path=MainModel.Symbols}" SelectedItem="{Binding Path=MainModel.SelectedSymbol}">
             <ListView.View>

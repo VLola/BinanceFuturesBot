@@ -41,6 +41,16 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("IsRun");
             }
         }
+        private bool _isStart { get; set; }
+        public bool IsStart
+        {
+            get { return _isStart; }
+            set
+            {
+                _isStart = value;
+                OnPropertyChanged("IsStart");
+            }
+        }
         private decimal _usdt { get; set; } = 11m;
         public decimal Usdt
         {

@@ -41,6 +41,7 @@ namespace BinanceFuturesBot.ViewModels
             await Task.Run(() => {
                 try
                 {
+                    MainModel.IsStart = true;
                     foreach (var item in MainModel.Symbols)
                     {
                         item.StartAsync(MainModel.Interval);
