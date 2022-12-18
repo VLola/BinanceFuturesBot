@@ -62,7 +62,8 @@ namespace BinanceFuturesBot.ViewModels
                 {
                     if(SymbolModel.Price > SymbolModel.PriceStopLoss)
                     {
-                        //CloseBetAsync();
+                        WriteLog("CloseBetAsync SymbolModel_PropertyChanged:");
+                        CloseBetAsync();
                     }
                 }
             }
@@ -144,6 +145,7 @@ namespace BinanceFuturesBot.ViewModels
             {
                 OpenBet();
                 await Task.Delay(300000 * (SymbolModel.Close + 1));
+                WriteLog("CloseBetAsync strategy:");
                 await CloseBetAsync();
                 SymbolModel.IsOpenOrder = false;
             });
@@ -164,11 +166,10 @@ namespace BinanceFuturesBot.ViewModels
                     var result = await Client.UsdFuturesApi.Account.GetPositionInformationAsync(symbol: SymbolModel.Name);
                     if (!result.Success)
                     {
-                        WriteLog($"Failed CloseBet: {result.Error?.Message}");
+                        WriteLog($"Failed CloseBetAsync: {result.Error?.Message}");
                     }
                     else
                     {
-                        WriteLog("CloseBet:");
                         decimal quantity = result.Data.ToList()[0].Quantity;
                         if (quantity != 0m)
                         {
@@ -201,8 +202,8 @@ namespace BinanceFuturesBot.ViewModels
                 }
                 else
                 {
-                    OpenStopLoss(side, quantity);
                     WriteLog($"OpenOrder: {JsonConvert.SerializeObject(result.Data)}");
+                    OpenStopLoss(side, quantity);
                     SymbolModel.Points.Add((DateTime.UtcNow.ToOADate(), Decimal.ToDouble(SymbolModel.Price)));
                 }
             }
@@ -218,18 +219,18 @@ namespace BinanceFuturesBot.ViewModels
                 var result = Client.UsdFuturesApi.Trading.PlaceOrderAsync(symbol: SymbolModel.Name, side: side, type: FuturesOrderType.Market, quantity: quantity, positionSide: PositionSide.Both).Result;
                 if (!result.Success)
                 {
-                    WriteLog($"Failed OpenOrder: {result.Error.Message}");
+                    WriteLog($"Failed CloseOrder: {result.Error.Message}");
                 }
                 else
                 {
-                    WriteLog($"OpenOrder: {JsonConvert.SerializeObject(result.Data)}");
+                    WriteLog($"CloseOrder: {JsonConvert.SerializeObject(result.Data)}");
                     SymbolModel.Points.Add((DateTime.UtcNow.ToOADate(), Decimal.ToDouble(SymbolModel.Price)));
                 }
                 CancelAllOrdersAsync();
             }
             catch (Exception eX)
             {
-                WriteLog($"OpenOrder {eX.Message}");
+                WriteLog($"CloseOrder {eX.Message}");
             }
         }
         private async void CancelAllOrdersAsync()
