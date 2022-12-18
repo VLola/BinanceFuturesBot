@@ -56,7 +56,11 @@ namespace BinanceFuturesBot.ViewModels
         {
             if (e.PropertyName == "SelectedSymbol")
             {
-                ChartViewModel.Load(MainModel.SelectedSymbol.SymbolModel);
+                int interval = 1;
+                if (MainModel.Interval == KlineInterval.ThreeMinutes) interval = 3;
+                else if (MainModel.Interval == KlineInterval.FiveMinutes) interval = 5;
+                else if (MainModel.Interval == KlineInterval.FifteenMinutes) interval = 15;
+                ChartViewModel.Load(MainModel.SelectedSymbol.SymbolModel, interval);
             }
             else if (e.PropertyName == "IsRun")
             {

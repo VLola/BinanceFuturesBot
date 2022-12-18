@@ -17,11 +17,11 @@ namespace BinanceFuturesBot.ViewModels
         private string _pathLog = $"{Directory.GetCurrentDirectory()}/log/";
         public BetModel BetModel { get; set; } = new();
         public BinanceClient? Client { get; set; }
-        public BetViewModel(BinanceFuturesUsdtTrade binanceFuturesUsdtTrade, BinanceClient? client) {
+        public BetViewModel(BinanceFuturesUsdtTrade binanceFuturesUsdtTrade, BinanceClient? client, KlineInterval klineInterval) {
             Client = client;
-            Load(binanceFuturesUsdtTrade);
+            Load(binanceFuturesUsdtTrade, klineInterval);
         }
-        private void Load(BinanceFuturesUsdtTrade binanceFuturesUsdtTrade)
+        private void Load(BinanceFuturesUsdtTrade binanceFuturesUsdtTrade, KlineInterval klineInterval)
         {
             BetModel.Time = binanceFuturesUsdtTrade.Timestamp;
             BetModel.Symbol = binanceFuturesUsdtTrade.Symbol;
@@ -32,6 +32,7 @@ namespace BinanceFuturesBot.ViewModels
             BetModel.Commission = binanceFuturesUsdtTrade.Fee;
             BetModel.Total = (binanceFuturesUsdtTrade.RealizedPnl - binanceFuturesUsdtTrade.Fee);
             BetModel.OrderSide = binanceFuturesUsdtTrade.Side;
+            BetModel.Interval = klineInterval;
         }
 
         private RelayCommand? _showChartCommand;
@@ -49,9 +50,15 @@ namespace BinanceFuturesBot.ViewModels
             DateTime startTime = BetModel.Time.AddHours(-1);
             DateTime endTime = BetModel.Time.AddHours(1);
 
-            List<IBinanceKline> klines = Klines(KlineInterval.FiveMinutes, startTime, endTime);
+            List<IBinanceKline> klines = Klines(BetModel.Interval, startTime, endTime);
             List<(double x, double y)> points = GetUserTrades(startTime, endTime);
-            ChartWindow chartWindow = new ChartWindow(klines, points);
+
+            int interval = 1;
+            if (BetModel.Interval == KlineInterval.ThreeMinutes) interval = 3;
+            else if (BetModel.Interval == KlineInterval.FiveMinutes) interval = 5;
+            else if (BetModel.Interval == KlineInterval.FifteenMinutes) interval = 15;
+
+            ChartWindow chartWindow = new ChartWindow(klines, points, interval);
             chartWindow.Show();
         }
         public List<IBinanceKline> Klines(KlineInterval interval, DateTime startTime, DateTime endTime)

@@ -25,7 +25,7 @@ namespace BinanceFuturesBot.Views
         public FinancePlot financePlot { get; set; }
         public ScatterPlot scatterPlot { get; set; }
         public WpfPlot MyPlot { get; set; } = new();
-        public ChartWindow(List<IBinanceKline> klines, List<(double x, double y)> points)
+        public ChartWindow(List<IBinanceKline> klines, List<(double x, double y)> points, int interval)
         {
             InitializeComponent();
             DataContext = this;
@@ -43,9 +43,9 @@ namespace BinanceFuturesBot.Views
                 MyPlot.Configuration.Pan = false;
                 MyPlot.Plot.RenderUnlock();
             }));
-            Load(klines, points);
+            Load(klines, points, interval);
         }
-        public async void Load(List<IBinanceKline> klines, List<(double x, double y)> points)
+        public async void Load(List<IBinanceKline> klines, List<(double x, double y)> points, int interval)
         {
             await Task.Run(() =>
             {
@@ -57,7 +57,7 @@ namespace BinanceFuturesBot.Views
                         low: Decimal.ToDouble(item.LowPrice),
                         close: Decimal.ToDouble(item.ClosePrice),
                         timeStart: item.OpenTime,
-                        timeSpan: TimeSpan.FromMinutes(5),
+                        timeSpan: TimeSpan.FromMinutes(interval),
                         volume: Decimal.ToDouble(item.Volume)
                     )).ToList();
 

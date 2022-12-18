@@ -32,7 +32,7 @@ namespace BinanceFuturesBot.ViewModels
                 ChartModel.MyPlot.Plot.RenderUnlock();
             }));
         }
-        public async void Load(SymbolModel symbolModel)
+        public async void Load(SymbolModel symbolModel, int interval)
         {
             await Task.Run(() =>
             {
@@ -44,7 +44,7 @@ namespace BinanceFuturesBot.ViewModels
                         low: Decimal.ToDouble(item.LowPrice),
                         close: Decimal.ToDouble(item.ClosePrice),
                         timeStart: item.OpenTime,
-                        timeSpan: TimeSpan.FromMinutes(5),
+                        timeSpan: TimeSpan.FromMinutes(interval),
                         volume: Decimal.ToDouble(item.Volume)
                     )).ToList();
 

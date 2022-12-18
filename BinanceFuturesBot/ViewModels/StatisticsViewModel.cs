@@ -119,7 +119,7 @@ namespace BinanceFuturesBot.ViewModels
 
                                 App.Current.Dispatcher.Invoke(new Action(() =>
                                 {
-                                    StatisticsModel.ListStatistics.Add(new BetViewModel(item, Client));
+                                    StatisticsModel.ListStatistics.Add(new BetViewModel(item, Client, StatisticsModel.Interval));
                                 }));
                             }
                         }

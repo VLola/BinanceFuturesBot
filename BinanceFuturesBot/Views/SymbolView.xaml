@@ -23,7 +23,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="50"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="70"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <CheckBox Grid.Column="0" Content="Run all" IsChecked="{Binding Path=MainModel.IsRun}"/>

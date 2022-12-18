@@ -24,5 +24,6 @@ namespace BinanceFuturesBot.Models
             }
         }
         public bool IsPositive { get; set; }
+        public KlineInterval Interval { get; set; }
     }
 }

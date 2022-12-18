@@ -1,4 +1,5 @@
-﻿using BinanceFuturesBot.ViewModels;
+﻿using Binance.Net.Enums;
+using BinanceFuturesBot.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,7 +18,13 @@ namespace BinanceFuturesBot.Models
         public List<BetViewModel> ListStatistics { get; set; } = new();
         public ObservableCollection<BetViewModel> Statistics { get; set; } = new();
         public List<string> Symbols { get; set; } = new();
-
+        public ObservableCollection<KlineInterval> Intervals { get; set; } = new();
+        public StatisticsModel() {
+            Intervals.Add(KlineInterval.OneMinute);
+            Intervals.Add(KlineInterval.ThreeMinutes);
+            Intervals.Add(KlineInterval.FiveMinutes);
+            Intervals.Add(KlineInterval.FifteenMinutes);
+        }
         private decimal _sumTotal { get; set; }
         public decimal SumTotal
         {
@@ -68,6 +75,16 @@ namespace BinanceFuturesBot.Models
             {
                 _isEndTime = value;
                 OnPropertyChanged("IsEndTime");
+            }
+        }
+        private KlineInterval _interval { get; set; } = KlineInterval.OneMinute;
+        public KlineInterval Interval
+        {
+            get { return _interval; }
+            set
+            {
+                _interval = value;
+                OnPropertyChanged("Interval");
             }
         }
     }
