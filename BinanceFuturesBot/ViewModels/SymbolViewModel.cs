@@ -72,8 +72,8 @@ namespace BinanceFuturesBot.ViewModels
         {
             await Task.Run(() =>
             {
-                SymbolModel.Interval = klineInterval;
-                SymbolModel.Klines = Klines(SymbolModel.Interval, 50);
+                SymbolModel.KlineInterval = klineInterval;
+                SymbolModel.Klines = Klines(SymbolModel.KlineInterval, 50);
 
                 SymbolModel.Price = SymbolModel.Klines[SymbolModel.Klines.Count - 1].ClosePrice;
                 StartKlineAsync();
@@ -83,7 +83,7 @@ namespace BinanceFuturesBot.ViewModels
         {
             try
             {
-                var result = await SocketClient.UsdFuturesStreams.SubscribeToKlineUpdatesAsync(SymbolModel.Name, SymbolModel.Interval, Message =>
+                var result = await SocketClient.UsdFuturesStreams.SubscribeToKlineUpdatesAsync(SymbolModel.Name, SymbolModel.KlineInterval, Message =>
                 {
                     SymbolModel.Price = Message.Data.Data.ClosePrice;
                     if (Message.Data.Data.OpenTime == SymbolModel.Klines[SymbolModel.Klines.Count - 1].OpenTime) UpdateKline(Message.Data.Data);
@@ -106,7 +106,7 @@ namespace BinanceFuturesBot.ViewModels
         private void AddKline(IBinanceKline binanceKline)
         {
             SymbolModel.Klines.Add(binanceKline);
-            if (!SymbolModel.IsOpenOrder && SymbolModel.IsRun) {
+            if (!SymbolModel.IsWait && SymbolModel.IsRun) {
                 CheckStrategyAsync();
             }
         }
@@ -128,7 +128,7 @@ namespace BinanceFuturesBot.ViewModels
                         if (SymbolModel.Klines[i + 1].ClosePrice > SymbolModel.Klines[i + 1].OpenPrice)
                         {
                             SymbolModel.PriceStopLoss = RoundPrice(SymbolModel.Klines[i + 1].ClosePrice + (SymbolModel.Klines[i + 1].ClosePrice * (SymbolModel.StopLoss / 100)));
-                            SymbolModel.IsOpenOrder = true;
+                            SymbolModel.IsWait = true;
                             OpenBetAsync();
                         }
                     }
@@ -144,10 +144,10 @@ namespace BinanceFuturesBot.ViewModels
             await Task.Run(async () =>
             {
                 OpenBet();
-                await Task.Delay(300000 * (SymbolModel.Close + 1));
+                await Task.Delay((60000 * SymbolModel.Interval * (SymbolModel.Close + 1)));
                 WriteLog("CloseBetAsync strategy:");
                 await CloseBetAsync();
-                SymbolModel.IsOpenOrder = false;
+                SymbolModel.IsWait = false;
             });
         }
 
@@ -202,6 +202,7 @@ namespace BinanceFuturesBot.ViewModels
                 }
                 else
                 {
+                    SymbolModel.IsOpenOrder = true;
                     WriteLog($"OpenOrder: {JsonConvert.SerializeObject(result.Data)}");
                     OpenStopLoss(side, quantity);
                     SymbolModel.Points.Add((DateTime.UtcNow.ToOADate(), Decimal.ToDouble(SymbolModel.Price)));
@@ -223,6 +224,7 @@ namespace BinanceFuturesBot.ViewModels
                 }
                 else
                 {
+                    SymbolModel.IsOpenOrder = false;
                     WriteLog($"CloseOrder: {JsonConvert.SerializeObject(result.Data)}");
                     SymbolModel.Points.Add((DateTime.UtcNow.ToOADate(), Decimal.ToDouble(SymbolModel.Price)));
                 }
