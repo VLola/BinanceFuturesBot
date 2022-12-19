@@ -147,6 +147,7 @@ namespace BinanceFuturesBot.ViewModels
                 await Task.Delay((60000 * SymbolModel.Interval * (SymbolModel.Close + 1)));
                 WriteLog("CloseBetAsync strategy:");
                 await CloseBetAsync();
+                SymbolModel.IsOpenOrder = false;
                 SymbolModel.IsWait = false;
             });
         }
