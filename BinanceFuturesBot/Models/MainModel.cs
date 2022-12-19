@@ -61,7 +61,7 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("Usdt");
             }
         }
-        private decimal _stopLoss { get; set; } = 1m;
+        private decimal _stopLoss { get; set; } = 0.05m;
         public decimal StopLoss
         {
             get { return _stopLoss; }
@@ -71,7 +71,7 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("StopLoss");
             }
         }
-        private int _open { get; set; } = 14;
+        private int _open { get; set; } = 3;
         public int Open
         {
             get { return _open; }
@@ -81,7 +81,7 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("Open");
             }
         }
-        private int _close { get; set; } = 3;
+        private int _close { get; set; } = 1;
         public int Close
         {
             get { return _close; }
