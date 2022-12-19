@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace BinanceFuturesBot.ViewModels
 {
@@ -38,14 +39,16 @@ namespace BinanceFuturesBot.ViewModels
         }
         private async void StartAsync()
         {
-            await Task.Run(() => {
+            await Task.Run(async () => {
                 try
                 {
                     MainModel.IsStart = true;
                     foreach (var item in MainModel.Symbols)
                     {
                         item.StartAsync(MainModel.Interval);
+                        await Task.Delay(100);
                     }
+                    MessageBox.Show("Start ok");
                 }
                 catch (Exception ex)
                 {
