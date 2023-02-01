@@ -17,7 +17,7 @@ namespace BinanceFuturesBot.ViewModels
 {
     public class LoginViewModel
     {
-        string site = "http://vburomanastia-001-site1.itempurl.com/";
+        string site = "http://valiklola2-001-site1.etempurl.com/";
         string _pathUsers = Directory.GetCurrentDirectory() + "/users/";
         public BinanceClient? Client { get; set; }
         public BinanceSocketClient? SocketClient { get; set; }
