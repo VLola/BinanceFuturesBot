@@ -51,45 +51,5 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("Usdt");
             }
         }
-        private decimal _stopLoss { get; set; } = 0.05m;
-        public decimal StopLoss
-        {
-            get { return _stopLoss; }
-            set
-            {
-                _stopLoss = value;
-                OnPropertyChanged("StopLoss");
-            }
-        }
-        private int _open { get; set; } = 3;
-        public int Open
-        {
-            get { return _open; }
-            set
-            {
-                _open = value;
-                OnPropertyChanged("Open");
-            }
-        }
-        private int _close { get; set; } = 1;
-        public int Close
-        {
-            get { return _close; }
-            set
-            {
-                _close = value;
-                OnPropertyChanged("Close");
-            }
-        }
-        private KlineInterval _interval { get; set; } = KlineInterval.OneMinute;
-        public KlineInterval Interval
-        {
-            get { return _interval; }
-            set
-            {
-                _interval = value;
-                OnPropertyChanged("Interval");
-            }
-        }
     }
 }

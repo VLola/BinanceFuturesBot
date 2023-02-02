@@ -183,5 +183,15 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("Interval");
             }
         }
+        private int _number { get; set; } = 0;
+        public int Number
+        {
+            get { return _number; }
+            set
+            {
+                _number = value;
+                OnPropertyChanged("Number");
+            }
+        }
     }
 }

@@ -32,16 +32,9 @@
             <CheckBox Grid.Column="0" Content="Run all" IsChecked="{Binding Path=MainModel.IsRun}"/>
             <TextBlock Grid.Column="1" Text="Usdt:"/>
             <TextBox Grid.Column="2" Text="{Binding Path=MainModel.Usdt}"/>
-            <TextBlock Grid.Column="3" Text="Stop loss:"/>
-            <TextBox Grid.Column="4" Text="{Binding Path=MainModel.StopLoss}"/>
-            <TextBlock Grid.Column="5" Text="Open:"/>
-            <TextBox Grid.Column="6" Text="{Binding Path=MainModel.Open}"/>
-            <TextBlock Grid.Column="7" Text="Close:"/>
-            <TextBox Grid.Column="8" Text="{Binding Path=MainModel.Close}"/>
-            <ComboBox Grid.Column="9" ItemsSource="{Binding Path=MainModel.Intervals}" SelectedItem="{Binding Path=MainModel.Interval}" Style="{StaticResource styleComboBox}"/>
             <Button Grid.Column="10" Content="Start" Command="{Binding Path=StartCommand}" Style="{StaticResource styleButton}"/>
         </Grid>
-        <ListView Grid.Row="1" ItemsSource="{Binding Path=MainModel.Symbols}" SelectedItem="{Binding Path=MainModel.SelectedSymbol}">
+        <ListView Grid.Row="1" ItemsSource="{Binding Path=MainModel.Symbols}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Run" Width="50">
@@ -53,24 +46,25 @@
                     </GridViewColumn>
                     <GridViewColumn Width="100" Header="Name" DisplayMemberBinding="{Binding Path=SymbolModel.Name}"/>
                     <GridViewColumn Width="100" Header="Price" DisplayMemberBinding="{Binding Path=SymbolModel.Price}"/>
+                    <GridViewColumn Header="Number" Width="70">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate >
+                                <TextBox Text="{Binding Path=SymbolModel.Number}" Width="40"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Save" Width="70">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate >
+                                <Button Content="Save" Command="{Binding Path=SaveNumberCommand}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                     <GridViewColumn Width="50" Header="Open" DisplayMemberBinding="{Binding Path=SymbolModel.Open}"/>
                     <GridViewColumn Width="50" Header="Close" DisplayMemberBinding="{Binding Path=SymbolModel.Close}"/>
                     <GridViewColumn Width="50" Header="SL" DisplayMemberBinding="{Binding Path=SymbolModel.StopLoss}"/>
+                    <GridViewColumn Width="50" Header="Interval" DisplayMemberBinding="{Binding Path=SymbolModel.Interval}"/>
                     <GridViewColumn Width="50" Header="Usdt" DisplayMemberBinding="{Binding Path=SymbolModel.Usdt}"/>
-                    <GridViewColumn Header="Open" Width="70">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate >
-                                <Button Content="Open" Command="{Binding Path=OpenOrderCommand}"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Close" Width="70">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate >
-                                <Button Content="Close" Command="{Binding Path=CloseOrderCommand}"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>

@@ -12,6 +12,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace BinanceFuturesBot.ViewModels
 {
@@ -39,6 +40,17 @@ namespace BinanceFuturesBot.ViewModels
                 }));
             }
         }
+        private RelayCommand? _saveNumberCommand;
+        public RelayCommand SaveNumberCommand
+        {
+            get
+            {
+                return _saveNumberCommand ?? (_saveNumberCommand = new RelayCommand(obj => {
+                    SaveNumberStrategy();
+                }));
+            }
+        }
+        private string _pathStrategies = $"{Directory.GetCurrentDirectory()}/strategies/";
         private string _pathLog = $"{Directory.GetCurrentDirectory()}/log/";
         public BinanceClient? Client { get; set; }
         public BinanceSocketClient? SocketClient { get; set; }
@@ -67,12 +79,40 @@ namespace BinanceFuturesBot.ViewModels
                 }
             }
         }
+        private void SaveNumberStrategy()
+        {
+            try
+            {
+                if (File.Exists(_pathStrategies + "config"))
+                {
+                    string json = File.ReadAllText(_pathStrategies + "config");
+                    List<StrategyModel>? list = JsonConvert.DeserializeObject<List<StrategyModel>>(json);
+                    if (list != null)
+                    {
+                        if(list.Where(strategy=>strategy.Name == SymbolModel.Name))
+                        list.Add(new StrategyModel() { Name = SymbolModel.Name, Number = SymbolModel.Number });
+                        json = JsonConvert.SerializeObject(list);
+                        File.WriteAllText(_pathStrategies + "config", json);
+                    }
+                }
+                else
+                {
+                    List<StrategyModel> list = new();
+                    list.Add(new StrategyModel() { Name = SymbolModel.Name, Number = SymbolModel.Number });
+                    string json = JsonConvert.SerializeObject(list);
+                    File.WriteAllText(_pathStrategies + "config", json);
+                }
+            }
+            catch(Exception ex)
+            {
+                WriteLog($"Failed SaveNumberStrategy: {ex.Message}");
+            }
+        }
 
-        public async void StartAsync(KlineInterval klineInterval)
+        public async void StartAsync()
         {
             await Task.Run(() =>
             {
-                SymbolModel.KlineInterval = klineInterval;
                 SymbolModel.Klines = Klines(SymbolModel.KlineInterval, 50);
 
                 SymbolModel.Price = SymbolModel.Klines[SymbolModel.Klines.Count - 1].ClosePrice;

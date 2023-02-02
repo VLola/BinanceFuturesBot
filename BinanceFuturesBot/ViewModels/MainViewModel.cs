@@ -16,6 +16,7 @@ namespace BinanceFuturesBot.ViewModels
     internal class MainViewModel
     {
         private string _pathLog = $"{Directory.GetCurrentDirectory()}/log/";
+        private string _pathStrategies = $"{Directory.GetCurrentDirectory()}/strategies/";
         public MainModel MainModel { get; set; } = new();
         public LoginViewModel LoginViewModel { get; set; } = new();
         public SettingsViewModel SettingsViewModel { get; set; } = new();
@@ -33,6 +34,7 @@ namespace BinanceFuturesBot.ViewModels
         public MainViewModel()
         {
             if (!Directory.Exists(_pathLog)) Directory.CreateDirectory(_pathLog);
+            if (!Directory.Exists(_pathStrategies)) Directory.CreateDirectory(_pathStrategies);
             LoginViewModel.LoginModel.PropertyChanged += LoginModel_PropertyChanged;
             MainModel.PropertyChanged += MainModel_PropertyChanged;
         }
@@ -44,7 +46,7 @@ namespace BinanceFuturesBot.ViewModels
                     MainModel.IsStart = true;
                     foreach (var item in MainModel.Symbols)
                     {
-                        item.StartAsync(MainModel.Interval);
+                        item.StartAsync();
                         await Task.Delay(100);
                     }
                     MessageBox.Show("Start ok");
@@ -88,57 +90,6 @@ namespace BinanceFuturesBot.ViewModels
                     catch (Exception ex)
                     {
                         WriteLog($"MainModel_PropertyChanged Usdt: {ex.Message}");
-                    }
-                });
-            }
-            else if (e.PropertyName == "StopLoss")
-            {
-                Task.Run(() => {
-                    try
-                    {
-                        decimal stopLoss = MainModel.StopLoss;
-                        foreach (var item in MainModel.Symbols)
-                        {
-                            item.SymbolModel.StopLoss = stopLoss;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        WriteLog($"MainModel_PropertyChanged StopLoss: {ex.Message}");
-                    }
-                });
-            }
-            else if (e.PropertyName == "Open")
-            {
-                Task.Run(() => {
-                    try
-                    {
-                        int open = MainModel.Open;
-                        foreach (var item in MainModel.Symbols)
-                        {
-                            item.SymbolModel.Open = open;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        WriteLog($"MainModel_PropertyChanged Open: {ex.Message}");
-                    }
-                });
-            }
-            else if (e.PropertyName == "Close")
-            {
-                Task.Run(() => {
-                    try
-                    {
-                        int close = MainModel.Close;
-                        foreach (var item in MainModel.Symbols)
-                        {
-                            item.SymbolModel.Close = close;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        WriteLog($"MainModel_PropertyChanged Close: {ex.Message}");
                     }
                 });
             }
