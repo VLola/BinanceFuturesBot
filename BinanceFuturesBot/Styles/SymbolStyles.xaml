@@ -10,5 +10,15 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
+    <Style TargetType="Grid" x:Key="styleGridProgressBar">
+        <Setter Property="Visibility" Value="Visible"/>
+        <Setter Property="Height" Value="15"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=MainModel.IsLoad}" Value="True" >
+                <Setter Property="Visibility" Value="Hidden"/>
+                <Setter Property="Height" Value="0"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
 
 </ResourceDictionary>

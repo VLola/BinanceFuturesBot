@@ -11,14 +11,19 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Net.Http;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
+using ScottPlot.Palettes;
 
 namespace BinanceFuturesBot.ViewModels
 {
     public class SymbolViewModel
     {
+        List<(int number, int open, int close, int interval, decimal sl)> Strategies = new();
         private RelayCommand? _openOrderCommand;
         public RelayCommand OpenOrderCommand
         {
@@ -56,9 +61,11 @@ namespace BinanceFuturesBot.ViewModels
         public BinanceClient? Client { get; set; }
         public BinanceSocketClient? SocketClient { get; set; }
         public SymbolModel SymbolModel { get; set; } = new();
-        public SymbolViewModel(BinanceClient? client, BinanceSocketClient? socketClient, BinanceFuturesUsdtSymbol symbol, int number, bool isRun) {
+        public SymbolViewModel(BinanceClient? client, BinanceSocketClient? socketClient, BinanceFuturesUsdtSymbol symbol, int number, bool isRun, List<(int number, int open, int close, int interval, decimal sl)> strategies) {
+            Strategies = strategies;
             SymbolModel.Name = symbol.Name;
             SymbolModel.Number = number;
+            LoadStrategy();
             SymbolModel.IsRun = isRun;
             SymbolModel.MinQuantity = symbol.LotSizeFilter.MinQuantity;
             SymbolModel.StepSize = symbol.LotSizeFilter.StepSize;
@@ -66,6 +73,11 @@ namespace BinanceFuturesBot.ViewModels
             Client = client;
             SocketClient = socketClient;
             SymbolModel.PropertyChanged += SymbolModel_PropertyChanged;
+        }
+
+        private void LoadStrategy()
+        {
+            (SymbolModel.Number, SymbolModel.Open, SymbolModel.Close, SymbolModel.Interval, SymbolModel.StopLoss) = Strategies.FirstOrDefault(item => item.number == SymbolModel.Number);
         }
 
         private void SymbolModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -120,6 +132,7 @@ namespace BinanceFuturesBot.ViewModels
                     string json = JsonConvert.SerializeObject(list);
                     File.WriteAllText(_pathStrategies + "config", json);
                 }
+                LoadStrategy();
             }
             catch(Exception ex)
             {

@@ -13,7 +13,11 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <Grid Grid.Row="3" Style="{StaticResource styleGridProgressBar}">
+            <ProgressBar IsIndeterminate = "True"/>
+        </Grid>
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -63,8 +67,14 @@
                     <GridViewColumn Width="50" Header="Open" DisplayMemberBinding="{Binding Path=SymbolModel.Open}"/>
                     <GridViewColumn Width="50" Header="Close" DisplayMemberBinding="{Binding Path=SymbolModel.Close}"/>
                     <GridViewColumn Width="50" Header="SL" DisplayMemberBinding="{Binding Path=SymbolModel.StopLoss}"/>
-                    <GridViewColumn Width="50" Header="Interval" DisplayMemberBinding="{Binding Path=SymbolModel.Interval}"/>
-                    <GridViewColumn Width="50" Header="Usdt" DisplayMemberBinding="{Binding Path=SymbolModel.Usdt}"/>
+                    <GridViewColumn Width="70" Header="Interval (m)" DisplayMemberBinding="{Binding Path=SymbolModel.Interval}"/>
+                    <GridViewColumn Header="Usdt" Width="70">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate >
+                                <TextBox Text="{Binding Path=SymbolModel.Usdt}" Width="40"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>

@@ -1,4 +1,5 @@
 ﻿using Binance.Net.Enums;
+using Binance.Net.Interfaces;
 using Binance.Net.Objects.Models.Futures;
 using BinanceFuturesBot.Command;
 using BinanceFuturesBot.Models;
@@ -15,6 +16,7 @@ namespace BinanceFuturesBot.ViewModels
 {
     internal class MainViewModel
     {
+        List<(int number, int open, int close, int interval, decimal sl)> Strategies = new();
         private string _pathLog = $"{Directory.GetCurrentDirectory()}/log/";
         private string _pathStrategies = $"{Directory.GetCurrentDirectory()}/strategies/";
         public MainModel MainModel { get; set; } = new();
@@ -37,6 +39,26 @@ namespace BinanceFuturesBot.ViewModels
             if (!Directory.Exists(_pathStrategies)) Directory.CreateDirectory(_pathStrategies);
             LoginViewModel.LoginModel.PropertyChanged += LoginModel_PropertyChanged;
             MainModel.PropertyChanged += MainModel_PropertyChanged;
+            LoadStrategies();
+        }
+        private void LoadStrategies()
+        {
+            int interval = 15;
+
+            decimal[] stopLosses = { 0.5m, 0.75m, 1m, 1.25m, 1.5m, 1.75m, 2m };
+
+            int number = 0;
+            foreach (var stopLoss in stopLosses)
+            {
+                for (int i = 2; i < 20; i++)
+                {
+                    for (int j = 0; j < 30; j++)
+                    {
+                        Strategies.Add((number, i, j, interval, stopLoss));
+                        number++;
+                    }
+                }
+            }
         }
         private async void StartAsync()
         {
@@ -254,6 +276,7 @@ namespace BinanceFuturesBot.ViewModels
                     int maxLeverage = brakets.FirstOrDefault(x => x.Symbol == it).Brackets.ToList()[0].InitialLeverage;
                     AddSymbol(symbol, detail, maxLeverage, number, isRun);
                 }
+                MainModel.IsLoad = true;
             });
         }
         private void AddSymbol(BinanceFuturesUsdtSymbol symbol, BinancePositionDetailsUsdt detail, int maxLeverage, int number, bool isRun)
@@ -264,7 +287,7 @@ namespace BinanceFuturesBot.ViewModels
                 SettingsViewModel.SettingsModel.Settings.Add(symbolDetailViewModel);
             }));
 
-            SymbolViewModel symbolViewModel = new(LoginViewModel.Client, LoginViewModel.SocketClient, symbol, number, isRun);
+            SymbolViewModel symbolViewModel = new(LoginViewModel.Client, LoginViewModel.SocketClient, symbol, number, isRun, Strategies);
             App.Current.Dispatcher.Invoke(new Action(() =>
             {
                 MainModel.Symbols.Add(symbolViewModel);

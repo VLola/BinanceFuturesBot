@@ -21,6 +21,16 @@ namespace BinanceFuturesBot.Models
             Intervals.Add(KlineInterval.FiveMinutes);
             Intervals.Add(KlineInterval.FifteenMinutes);
         }
+        private bool _isLoad { get; set; }
+        public bool IsLoad
+        {
+            get { return _isLoad; }
+            set
+            {
+                _isLoad = value;
+                OnPropertyChanged("IsLoad");
+            }
+        }
         private bool _isRun { get; set; }
         public bool IsRun
         {

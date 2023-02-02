@@ -159,7 +159,7 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("PriceStopLoss");
             }
         }
-        private KlineInterval _klineInterval { get; set; } = KlineInterval.OneMinute;
+        private KlineInterval _klineInterval { get; set; }
         public KlineInterval KlineInterval
         {
             get { return _klineInterval; }
@@ -167,10 +167,6 @@ namespace BinanceFuturesBot.Models
             {
                 _klineInterval = value;
                 OnPropertyChanged("KlineInterval");
-                if (value == KlineInterval.OneMinute) Interval = 1;
-                else if (value == KlineInterval.ThreeMinutes) Interval = 3;
-                else if (value == KlineInterval.FiveMinutes) Interval = 5;
-                else if (value == KlineInterval.FifteenMinutes) Interval = 15;
             }
         }
         private int _interval { get; set; } = 1;
@@ -181,6 +177,10 @@ namespace BinanceFuturesBot.Models
             {
                 _interval = value;
                 OnPropertyChanged("Interval");
+                if (value == 1) KlineInterval = KlineInterval.OneMinute;
+                else if (value == 3) KlineInterval = KlineInterval.ThreeMinutes;
+                else if (value == 5) KlineInterval = KlineInterval.FiveMinutes;
+                else if (value == 15) KlineInterval = KlineInterval.FifteenMinutes;
             }
         }
         private int _number { get; set; } = 0;
