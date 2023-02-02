@@ -17,12 +17,7 @@
             <TabControl>
                 <TabItem Header="Main">
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <local:SymbolView Grid.Column="0"/>
-                        <local:ChartView Grid.Column="1"/>
+                        <local:SymbolView/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Settings">

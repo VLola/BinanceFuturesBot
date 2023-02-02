@@ -3,6 +3,7 @@ using Binance.Net.Objects;
 using BinanceFuturesBot.Command;
 using BinanceFuturesBot.Models;
 using CryptoExchange.Net.Authentication;
+using CryptoExchange.Net.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -49,34 +50,41 @@ namespace BinanceFuturesBot.ViewModels
         }
         private void Login()
         {
-            if (!String.IsNullOrEmpty(LoginModel.SelectedUser) && File.Exists(_pathUsers + LoginModel.SelectedUser)) { 
-                string json = File.ReadAllText(_pathUsers + LoginModel.SelectedUser);
-                User? user = JsonConvert.DeserializeObject<User>(json);
-                if (user != null)
+            try
+            {
+                if (!String.IsNullOrEmpty(LoginModel.SelectedUser) && File.Exists(_pathUsers + LoginModel.SelectedUser))
                 {
-                    HttpClient client = new HttpClient();
-                    client.BaseAddress = new Uri(site);
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    HttpResponseMessage response = client.GetAsync($"api/User/Get?trialKey={user.TrialKey}&&apiKey={user.ApiKey}&&macAddress={GetMacAddress()}").Result;
-                    if (response.IsSuccessStatusCode)
+                    string json = File.ReadAllText(_pathUsers + LoginModel.SelectedUser);
+                    User? user = JsonConvert.DeserializeObject<User>(json);
+                    if (user != null)
                     {
-                        var result = response.Content.ReadAsStringAsync().Result;
-                        if(result == "true")
+                        HttpClient client = new HttpClient();
+                        client.BaseAddress = new Uri(site);
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                        HttpResponseMessage response = client.GetAsync($"api/User/Get?trialKey={user.TrialKey}&&apiKey={user.ApiKey}&&macAddress={GetMacAddress()}").Result;
+                        if (response.IsSuccessStatusCode)
                         {
-                            LoginModel.IsTrial = true;
-                            LoginBinance(user.IsTestnet, user.ApiKey, user.SecretKey);
+                            var result = response.Content.ReadAsStringAsync().Result;
+                            if (result == "true")
+                            {
+                                LoginModel.IsTrial = true;
+                                LoginBinance(user.IsTestnet, user.ApiKey, user.SecretKey);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Login failed");
+                            }
                         }
                         else
                         {
-                            MessageBox.Show("Login failed");
+                            MessageBox.Show($"{(int)response.StatusCode}, {response.ReasonPhrase}");
                         }
                     }
-                    else
-                    {
-                        MessageBox.Show($"{(int)response.StatusCode}, {response.ReasonPhrase}");
-                    }
                 }
+            }
+            catch {
+                MessageBox.Show("Connection error");
             }
         }
         private void LoginBinance(bool testnet, string apiKey, string secretKey)

@@ -21,16 +21,6 @@ namespace BinanceFuturesBot.Models
             Intervals.Add(KlineInterval.FiveMinutes);
             Intervals.Add(KlineInterval.FifteenMinutes);
         }
-        private SymbolViewModel _selectedSymbol { get; set; }
-        public SymbolViewModel SelectedSymbol
-        {
-            get { return _selectedSymbol; }
-            set
-            {
-                _selectedSymbol = value;
-                OnPropertyChanged("SelectedSymbol");
-            }
-        }
         private bool _isRun { get; set; }
         public bool IsRun
         {

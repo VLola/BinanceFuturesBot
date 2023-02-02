@@ -20,7 +20,6 @@ namespace BinanceFuturesBot.ViewModels
         public LoginViewModel LoginViewModel { get; set; } = new();
         public SettingsViewModel SettingsViewModel { get; set; } = new();
         public StatisticsViewModel StatisticsViewModel { get; set; } = new();
-        public ChartViewModel ChartViewModel { get; set; } = new();
         private RelayCommand? _startCommand;
         public RelayCommand StartCommand
         {
@@ -58,15 +57,7 @@ namespace BinanceFuturesBot.ViewModels
         }
         private void MainModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "SelectedSymbol")
-            {
-                int interval = 1;
-                if (MainModel.Interval == KlineInterval.ThreeMinutes) interval = 3;
-                else if (MainModel.Interval == KlineInterval.FiveMinutes) interval = 5;
-                else if (MainModel.Interval == KlineInterval.FifteenMinutes) interval = 15;
-                ChartViewModel.Load(MainModel.SelectedSymbol.SymbolModel, interval);
-            }
-            else if (e.PropertyName == "IsRun")
+            if (e.PropertyName == "IsRun")
             {
                 Task.Run(() => {
                     try
