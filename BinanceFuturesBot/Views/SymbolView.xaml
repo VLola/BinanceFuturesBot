@@ -48,7 +48,7 @@
                     <GridViewColumn Width="100" Header="Price" DisplayMemberBinding="{Binding Path=SymbolModel.Price}"/>
                     <GridViewColumn Header="Number" Width="70">
                         <GridViewColumn.CellTemplate>
-                            <DataTemplate >
+                            <DataTemplate>
                                 <TextBox Text="{Binding Path=SymbolModel.Number}" Width="40"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>

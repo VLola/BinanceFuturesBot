@@ -230,16 +230,33 @@ namespace BinanceFuturesBot.ViewModels
                     }
                 }
                 list.Sort();
+
+                if (!File.Exists(_pathStrategies + "config")) File.WriteAllText(_pathStrategies + "config", "[]");
+
+                string json = File.ReadAllText(_pathStrategies + "config");
+                List<StrategyModel>? strategies = JsonConvert.DeserializeObject<List<StrategyModel>>(json);
+
                 foreach (var it in list)
                 {
+                    int number = 0;
+                    bool isRun = false;
+                    if(strategies != null)
+                    {
+                        StrategyModel? strategyModel = strategies.FirstOrDefault(strategy => strategy.Name == it);
+                        if(strategyModel != null)
+                        {
+                            number = strategyModel.Number;
+                            isRun = strategyModel.IsRun;
+                        }
+                    }
                     BinanceFuturesUsdtSymbol symbol = symbols.FirstOrDefault(x => x.Name == it);
                     BinancePositionDetailsUsdt detail = details.FirstOrDefault(x => x.Symbol == it);
                     int maxLeverage = brakets.FirstOrDefault(x => x.Symbol == it).Brackets.ToList()[0].InitialLeverage;
-                    AddSymbol(symbol, detail, maxLeverage);
+                    AddSymbol(symbol, detail, maxLeverage, number, isRun);
                 }
             });
         }
-        private void AddSymbol(BinanceFuturesUsdtSymbol symbol, BinancePositionDetailsUsdt detail, int maxLeverage)
+        private void AddSymbol(BinanceFuturesUsdtSymbol symbol, BinancePositionDetailsUsdt detail, int maxLeverage, int number, bool isRun)
         {
             SymbolDetailViewModel symbolDetailViewModel = new(LoginViewModel.Client, detail, maxLeverage);
             App.Current.Dispatcher.Invoke(new Action(() =>
@@ -247,7 +264,7 @@ namespace BinanceFuturesBot.ViewModels
                 SettingsViewModel.SettingsModel.Settings.Add(symbolDetailViewModel);
             }));
 
-            SymbolViewModel symbolViewModel = new(LoginViewModel.Client, LoginViewModel.SocketClient, symbol);
+            SymbolViewModel symbolViewModel = new(LoginViewModel.Client, LoginViewModel.SocketClient, symbol, number, isRun);
             App.Current.Dispatcher.Invoke(new Action(() =>
             {
                 MainModel.Symbols.Add(symbolViewModel);

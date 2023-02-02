@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 
 namespace BinanceFuturesBot.ViewModels
 {
@@ -55,8 +56,10 @@ namespace BinanceFuturesBot.ViewModels
         public BinanceClient? Client { get; set; }
         public BinanceSocketClient? SocketClient { get; set; }
         public SymbolModel SymbolModel { get; set; } = new();
-        public SymbolViewModel(BinanceClient? client, BinanceSocketClient? socketClient, BinanceFuturesUsdtSymbol symbol) {
+        public SymbolViewModel(BinanceClient? client, BinanceSocketClient? socketClient, BinanceFuturesUsdtSymbol symbol, int number, bool isRun) {
             SymbolModel.Name = symbol.Name;
+            SymbolModel.Number = number;
+            SymbolModel.IsRun = isRun;
             SymbolModel.MinQuantity = symbol.LotSizeFilter.MinQuantity;
             SymbolModel.StepSize = symbol.LotSizeFilter.StepSize;
             SymbolModel.TickSize = symbol.PriceFilter.TickSize;
@@ -89,16 +92,31 @@ namespace BinanceFuturesBot.ViewModels
                     List<StrategyModel>? list = JsonConvert.DeserializeObject<List<StrategyModel>>(json);
                     if (list != null)
                     {
-                        if(list.Where(strategy=>strategy.Name == SymbolModel.Name))
-                        list.Add(new StrategyModel() { Name = SymbolModel.Name, Number = SymbolModel.Number });
+                        StrategyModel? strategyModel = list.FirstOrDefault(strategy => strategy.Name == SymbolModel.Name);
+                        if (strategyModel != null)
+                        {
+                            strategyModel.Number = SymbolModel.Number;
+                            strategyModel.IsRun = SymbolModel.IsRun;
+                        }
+                        else
+                        {
+                            list.Add(new StrategyModel() { Name = SymbolModel.Name, Number = SymbolModel.Number, IsRun = SymbolModel.IsRun });
+                        }
                         json = JsonConvert.SerializeObject(list);
                         File.WriteAllText(_pathStrategies + "config", json);
+                    }
+                    else
+                    {
+                        List<StrategyModel> listNew = new();
+                        listNew.Add(new StrategyModel() { Name = SymbolModel.Name, Number = SymbolModel.Number, IsRun = SymbolModel.IsRun });
+                        string jsonNew = JsonConvert.SerializeObject(listNew);
+                        File.WriteAllText(_pathStrategies + "config", jsonNew);
                     }
                 }
                 else
                 {
                     List<StrategyModel> list = new();
-                    list.Add(new StrategyModel() { Name = SymbolModel.Name, Number = SymbolModel.Number });
+                    list.Add(new StrategyModel() { Name = SymbolModel.Name, Number = SymbolModel.Number, IsRun = SymbolModel.IsRun });
                     string json = JsonConvert.SerializeObject(list);
                     File.WriteAllText(_pathStrategies + "config", json);
                 }
