@@ -1,5 +1,6 @@
 ﻿using Binance.Net.Enums;
 using System;
+using System.Collections.ObjectModel;
 
 namespace BinanceFuturesBot.Models
 {
@@ -24,6 +25,7 @@ namespace BinanceFuturesBot.Models
             }
         }
         public bool IsPositive { get; set; }
-        public KlineInterval Interval { get; set; }
+        public ObservableCollection<KlineInterval> Intervals { get; set; } = new() { KlineInterval.FiveMinutes, KlineInterval.FifteenMinutes };
+        public KlineInterval Interval { get; set; } = KlineInterval.FiveMinutes;
     }
 }

@@ -65,23 +65,6 @@ namespace BinanceFuturesBot.ViewModels
                     }
                 }
             }
-
-            //int interval = 15;
-
-            //decimal[] stopLosses = { 0.5m, 0.75m, 1m, 1.25m, 1.5m, 1.75m, 2m };
-
-            //int number = 0;
-            //foreach (var stopLoss in stopLosses)
-            //{
-            //    for (int i = 2; i < 20; i++)
-            //    {
-            //        for (int j = 0; j < 30; j++)
-            //        {
-            //            Strategies.Add((number, i, j, interval, stopLoss));
-            //            number++;
-            //        }
-            //    }
-            //}
         }
         private async void StartAsync()
         {

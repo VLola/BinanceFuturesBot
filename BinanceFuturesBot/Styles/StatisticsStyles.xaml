@@ -37,4 +37,9 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
+    <Style TargetType="ComboBox" x:Key="styleComboBox">
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="0"/>
+    </Style>
 </ResourceDictionary>

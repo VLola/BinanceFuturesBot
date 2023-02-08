@@ -122,7 +122,7 @@ namespace BinanceFuturesBot.ViewModels
                 }
                 else {
                     LoginModel.IsTrial = false;
-                    MessageBox.Show("Login failed!");
+                    MessageBox.Show("Login binance failed!");
                 }
             }
             catch (Exception ex)
