@@ -43,7 +43,7 @@
                 <GridView>
                     <GridViewColumn Header="Run" Width="50">
                         <GridViewColumn.CellTemplate>
-                            <DataTemplate >
+                            <DataTemplate>
                                 <CheckBox IsChecked="{Binding Path=SymbolModel.IsRun}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
@@ -57,17 +57,15 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Save" Width="70">
+                    <GridViewColumn Width="70">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate >
-                                <Button Content="Save" Command="{Binding Path=SaveNumberCommand}"/>
+                                <Button Content="Save" Command="{Binding Path=SaveNumberCommand}" Style="{StaticResource styleButtonSave}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Width="50" Header="Open" DisplayMemberBinding="{Binding Path=SymbolModel.Open}"/>
-                    <GridViewColumn Width="50" Header="Close" DisplayMemberBinding="{Binding Path=SymbolModel.Close}"/>
-                    <GridViewColumn Width="50" Header="SL" DisplayMemberBinding="{Binding Path=SymbolModel.StopLoss}"/>
-                    <GridViewColumn Width="70" Header="Interval (m)" DisplayMemberBinding="{Binding Path=SymbolModel.Interval}"/>
+                    <GridViewColumn Width="50" Header="SL (%)" DisplayMemberBinding="{Binding Path=SymbolModel.StopLoss}"/>
+                    <!--<GridViewColumn Width="70" Header="Interval (m)" DisplayMemberBinding="{Binding Path=SymbolModel.Interval}"/>-->
                     <GridViewColumn Header="Usdt" Width="70">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate >

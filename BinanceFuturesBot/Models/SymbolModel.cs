@@ -15,7 +15,19 @@ namespace BinanceFuturesBot.Models
         }
         public List<IBinanceKline> Klines { get; set; } = new();
         public List<(double x, double y)> Points { get; set; } = new();
+        private StrategyModel _strategyModel { get; set; } = new();
 
+        public void SaveStrategy(string name,int number, bool isRun)
+        {
+            _strategyModel.Name = name;
+            _strategyModel.Number = number;
+            _strategyModel.IsRun = isRun;
+        }
+        private void CheckChanges()
+        {
+            if (_isRun == _strategyModel.IsRun && _number == _strategyModel.Number) IsNotSaved = false;
+            else IsNotSaved = true;
+        }
         private bool _isRun { get; set; }
         public bool IsRun
         {
@@ -23,7 +35,29 @@ namespace BinanceFuturesBot.Models
             set
             {
                 _isRun = value;
-                OnPropertyChanged("IsRun");
+                OnPropertyChanged("IsRun"); 
+                CheckChanges();
+            }
+        }
+        private int _number { get; set; }
+        public int Number
+        {
+            get { return _number; }
+            set
+            {
+                _number = value;
+                OnPropertyChanged("Number");
+                CheckChanges();
+            }
+        }
+        private bool _isNotSaved { get; set; }
+        public bool IsNotSaved
+        {
+            get { return _isNotSaved; }
+            set
+            {
+                _isNotSaved = value;
+                OnPropertyChanged("IsNotSaved");
             }
         }
         private int _open { get; set; } = 3;
@@ -181,16 +215,6 @@ namespace BinanceFuturesBot.Models
                 else if (value == 3) KlineInterval = KlineInterval.ThreeMinutes;
                 else if (value == 5) KlineInterval = KlineInterval.FiveMinutes;
                 else if (value == 15) KlineInterval = KlineInterval.FifteenMinutes;
-            }
-        }
-        private int _number { get; set; } = 0;
-        public int Number
-        {
-            get { return _number; }
-            set
-            {
-                _number = value;
-                OnPropertyChanged("Number");
             }
         }
     }

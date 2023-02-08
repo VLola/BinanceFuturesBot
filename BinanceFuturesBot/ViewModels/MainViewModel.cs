@@ -246,7 +246,7 @@ namespace BinanceFuturesBot.ViewModels
                 foreach (var it in symbols)
                 {
                     //BTSUSDT CVCUSDT FTTUSDT RAYUSDT SCUSDT TLMUSDT SRMUSDT BTCSTUSDT
-                    if (it.Name.EndsWith("USDT") && it.Name != "BTSUSDT" && it.Name != "CVCUSDT" && it.Name != "FTTUSDT" && it.Name != "RAYUSDT" && it.Name != "SCUSDT" && it.Name != "TLMUSDT" && it.Name != "SRMUSDT" && it.Name != "BTCSTUSDT")
+                    if (it.Name.EndsWith("USDT"))
                     {
                         list.Add(it.Name);
                     }

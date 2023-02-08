@@ -6,18 +6,13 @@ using BinanceFuturesBot.Command;
 using BinanceFuturesBot.Models;
 using CryptoExchange.Net.CommonObjects;
 using Newtonsoft.Json;
+using ScottPlot.Palettes;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
-using System.Net.Http.Headers;
-using System.Net.Http;
-using System.Security.Policy;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Documents;
-using ScottPlot.Palettes;
 
 namespace BinanceFuturesBot.ViewModels
 {
@@ -65,8 +60,9 @@ namespace BinanceFuturesBot.ViewModels
             Strategies = strategies;
             SymbolModel.Name = symbol.Name;
             SymbolModel.Number = number;
-            LoadStrategy();
             SymbolModel.IsRun = isRun;
+            SymbolModel.SaveStrategy(SymbolModel.Name, SymbolModel.Number, SymbolModel.IsRun);
+            LoadStrategy();
             SymbolModel.MinQuantity = symbol.LotSizeFilter.MinQuantity;
             SymbolModel.StepSize = symbol.LotSizeFilter.StepSize;
             SymbolModel.TickSize = symbol.PriceFilter.TickSize;
@@ -78,6 +74,7 @@ namespace BinanceFuturesBot.ViewModels
         private void LoadStrategy()
         {
             (SymbolModel.Number, SymbolModel.Open, SymbolModel.Close, SymbolModel.Interval, SymbolModel.StopLoss) = Strategies.FirstOrDefault(item => item.number == SymbolModel.Number);
+            
         }
 
         private void SymbolModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -132,6 +129,7 @@ namespace BinanceFuturesBot.ViewModels
                     string json = JsonConvert.SerializeObject(list);
                     File.WriteAllText(_pathStrategies + "config", json);
                 }
+                SymbolModel.SaveStrategy(SymbolModel.Name, SymbolModel.Number, SymbolModel.IsRun);
                 LoadStrategy();
             }
             catch(Exception ex)
