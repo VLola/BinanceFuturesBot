@@ -50,6 +50,16 @@ namespace BinanceFuturesBot.Models
                 CheckChanges();
             }
         }
+        private int _numberAlgorithm { get; set; }
+        public int NumberAlgorithm
+        {
+            get { return _numberAlgorithm; }
+            set
+            {
+                _numberAlgorithm = value;
+                OnPropertyChanged("NumberAlgorithm");
+            }
+        }
         private bool _isNotSaved { get; set; }
         public bool IsNotSaved
         {

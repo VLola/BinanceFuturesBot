@@ -187,18 +187,56 @@ namespace BinanceFuturesBot.ViewModels
                 {
                     int i = SymbolModel.Klines.Count - 3;
                     decimal sum = 0m;
-                    for (int j = i; j > (i - 30); j--)
+
+                    if (SymbolModel.NumberAlgorithm == 1)
                     {
-                        sum += (SymbolModel.Klines[j].HighPrice - SymbolModel.Klines[j].LowPrice);
-                    }
-                    decimal average = (sum / 30);
-                    if ((SymbolModel.Klines[i + 1].HighPrice - SymbolModel.Klines[i + 1].LowPrice) > (average * SymbolModel.Open))
-                    {
-                        if (SymbolModel.Klines[i + 1].ClosePrice > SymbolModel.Klines[i + 1].OpenPrice)
+                        for (int j = i; j > (i - 30); j--)
                         {
-                            SymbolModel.PriceStopLoss = RoundPrice(SymbolModel.Klines[i + 1].ClosePrice + (SymbolModel.Klines[i + 1].ClosePrice * (SymbolModel.StopLoss / 100)));
-                            SymbolModel.IsWait = true;
-                            OpenBetAsync();
+                            sum += (SymbolModel.Klines[j].HighPrice - SymbolModel.Klines[j].LowPrice);
+                        }
+                        decimal average = (sum / 30);
+                        if ((SymbolModel.Klines[i + 1].HighPrice - SymbolModel.Klines[i + 1].LowPrice) > (average * SymbolModel.Open))
+                        {
+                            if (SymbolModel.Klines[i + 1].ClosePrice > SymbolModel.Klines[i + 1].OpenPrice)
+                            {
+                                SymbolModel.PriceStopLoss = RoundPrice(SymbolModel.Klines[i + 1].ClosePrice + (SymbolModel.Klines[i + 1].ClosePrice * (SymbolModel.StopLoss / 100)));
+                                SymbolModel.IsWait = true;
+                                OpenBetAsync();
+                            }
+                        }
+                    }
+                    else if (SymbolModel.NumberAlgorithm == 2)
+                    {
+                        for (int j = i; j > (i - 30); j--)
+                        {
+                            sum += SymbolModel.Klines[j].Volume;
+                        }
+                        decimal average = (sum / 30);
+                        if (SymbolModel.Klines[i + 1].Volume > (average * SymbolModel.Open))
+                        {
+                            if (SymbolModel.Klines[i + 1].ClosePrice > SymbolModel.Klines[i + 1].OpenPrice)
+                            {
+                                SymbolModel.PriceStopLoss = RoundPrice(SymbolModel.Klines[i + 1].ClosePrice + (SymbolModel.Klines[i + 1].ClosePrice * (SymbolModel.StopLoss / 100)));
+                                SymbolModel.IsWait = true;
+                                OpenBetAsync();
+                            }
+                        }
+                    }
+                    else if (SymbolModel.NumberAlgorithm == 3)
+                    {
+                        for (int j = i; j > (i - 30); j--)
+                        {
+                            sum += (SymbolModel.Klines[j].HighPrice - SymbolModel.Klines[j].LowPrice);
+                        }
+                        decimal average = (sum / 30);
+                        if ((SymbolModel.Klines[i + 1].HighPrice - SymbolModel.Klines[i + 1].LowPrice) > (average * SymbolModel.Open))
+                        {
+                            if (SymbolModel.Klines[i + 1].ClosePrice < SymbolModel.Klines[i + 1].OpenPrice)
+                            {
+                                SymbolModel.PriceStopLoss = RoundPrice(SymbolModel.Klines[i + 1].ClosePrice + (SymbolModel.Klines[i + 1].ClosePrice * (SymbolModel.StopLoss / 100)));
+                                SymbolModel.IsWait = true;
+                                OpenBetAsync();
+                            }
                         }
                     }
                 }
