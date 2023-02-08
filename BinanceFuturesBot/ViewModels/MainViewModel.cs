@@ -1,6 +1,7 @@
 ﻿using Binance.Net.Enums;
 using Binance.Net.Interfaces;
 using Binance.Net.Objects.Models.Futures;
+using Binance.Net.Objects.Models.Spot;
 using BinanceFuturesBot.Command;
 using BinanceFuturesBot.Models;
 using CryptoExchange.Net.CommonObjects;
@@ -16,7 +17,7 @@ namespace BinanceFuturesBot.ViewModels
 {
     internal class MainViewModel
     {
-        List<(int number, int open, int close, int interval, decimal sl)> Strategies = new();
+        List<(int number, int open, int close, int interval, decimal sl, int algorithm)> Strategies = new();
         private string _pathLog = $"{Directory.GetCurrentDirectory()}/log/";
         private string _pathStrategies = $"{Directory.GetCurrentDirectory()}/strategies/";
         public MainModel MainModel { get; set; } = new();
@@ -43,22 +44,44 @@ namespace BinanceFuturesBot.ViewModels
         }
         private void LoadStrategies()
         {
-            int interval = 15;
-
-            decimal[] stopLosses = { 0.5m, 0.75m, 1m, 1.25m, 1.5m, 1.75m, 2m };
-
+            int[] intervals = { 5, 15 };
+            int[] algorithms = { 1, 2, 3 };
+            decimal[] stopLosses = { 0.5m, 1m, 1.5m, 2m };
             int number = 0;
-            foreach (var stopLoss in stopLosses)
+            foreach (var interval in intervals)
             {
-                for (int i = 2; i < 20; i++)
+                foreach (var algorithm in algorithms)
                 {
-                    for (int j = 0; j < 30; j++)
+                    foreach (var stopLoss in stopLosses)
                     {
-                        Strategies.Add((number, i, j, interval, stopLoss));
-                        number++;
+                        for (int i = 2; i < 20; i++)
+                        {
+                            for (int j = 0; j < 30; j++)
+                            {
+                                Strategies.Add((number, i, j, interval, stopLoss, algorithm));
+                                number++;
+                            }
+                        }
                     }
                 }
             }
+
+            //int interval = 15;
+
+            //decimal[] stopLosses = { 0.5m, 0.75m, 1m, 1.25m, 1.5m, 1.75m, 2m };
+
+            //int number = 0;
+            //foreach (var stopLoss in stopLosses)
+            //{
+            //    for (int i = 2; i < 20; i++)
+            //    {
+            //        for (int j = 0; j < 30; j++)
+            //        {
+            //            Strategies.Add((number, i, j, interval, stopLoss));
+            //            number++;
+            //        }
+            //    }
+            //}
         }
         private async void StartAsync()
         {

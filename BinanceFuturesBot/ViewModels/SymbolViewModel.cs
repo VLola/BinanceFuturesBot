@@ -18,7 +18,7 @@ namespace BinanceFuturesBot.ViewModels
 {
     public class SymbolViewModel
     {
-        List<(int number, int open, int close, int interval, decimal sl)> Strategies = new();
+        List<(int number, int open, int close, int interval, decimal sl, int algorithm)> Strategies = new();
         private RelayCommand? _openOrderCommand;
         public RelayCommand OpenOrderCommand
         {
@@ -56,7 +56,7 @@ namespace BinanceFuturesBot.ViewModels
         public BinanceClient? Client { get; set; }
         public BinanceSocketClient? SocketClient { get; set; }
         public SymbolModel SymbolModel { get; set; } = new();
-        public SymbolViewModel(BinanceClient? client, BinanceSocketClient? socketClient, BinanceFuturesUsdtSymbol symbol, int number, bool isRun, List<(int number, int open, int close, int interval, decimal sl)> strategies) {
+        public SymbolViewModel(BinanceClient? client, BinanceSocketClient? socketClient, BinanceFuturesUsdtSymbol symbol, int number, bool isRun, List<(int number, int open, int close, int interval, decimal sl, int algorithm)> strategies) {
             Strategies = strategies;
             SymbolModel.Name = symbol.Name;
             SymbolModel.Number = number;
@@ -73,7 +73,7 @@ namespace BinanceFuturesBot.ViewModels
 
         private void LoadStrategy()
         {
-            (SymbolModel.Number, SymbolModel.Open, SymbolModel.Close, SymbolModel.Interval, SymbolModel.StopLoss) = Strategies.FirstOrDefault(item => item.number == SymbolModel.Number);
+            (SymbolModel.Number, SymbolModel.Open, SymbolModel.Close, SymbolModel.Interval, SymbolModel.StopLoss, SymbolModel.NumberAlgorithm) = Strategies.FirstOrDefault(item => item.number == SymbolModel.Number);
             
         }
 
@@ -190,6 +190,7 @@ namespace BinanceFuturesBot.ViewModels
 
                     if (SymbolModel.NumberAlgorithm == 1)
                     {
+                        // Default
                         for (int j = i; j > (i - 30); j--)
                         {
                             sum += (SymbolModel.Klines[j].HighPrice - SymbolModel.Klines[j].LowPrice);
@@ -207,6 +208,7 @@ namespace BinanceFuturesBot.ViewModels
                     }
                     else if (SymbolModel.NumberAlgorithm == 2)
                     {
+                        // Алгоритм по Volume
                         for (int j = i; j > (i - 30); j--)
                         {
                             sum += SymbolModel.Klines[j].Volume;
@@ -224,6 +226,7 @@ namespace BinanceFuturesBot.ViewModels
                     }
                     else if (SymbolModel.NumberAlgorithm == 3)
                     {
+                        // Алгоритм в сторону выстрела
                         for (int j = i; j > (i - 30); j--)
                         {
                             sum += (SymbolModel.Klines[j].HighPrice - SymbolModel.Klines[j].LowPrice);
