@@ -70,7 +70,7 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("IsNotSaved");
             }
         }
-        private int _open { get; set; } = 3;
+        private int _open { get; set; }
         public int Open
         {
             get { return _open; }
@@ -80,7 +80,7 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("Open");
             }
         }
-        private int _close { get; set; } = 1;
+        private int _close { get; set; }
         public int Close
         {
             get { return _close; }
@@ -90,7 +90,7 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("Close");
             }
         }
-        private decimal _stopLoss { get; set; } = 0.05m;
+        private decimal _stopLoss { get; set; }
         public decimal StopLoss
         {
             get { return _stopLoss; }
@@ -213,7 +213,7 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("KlineInterval");
             }
         }
-        private int _interval { get; set; } = 1;
+        private int _interval { get; set; }
         public int Interval
         {
             get { return _interval; }

@@ -147,7 +147,6 @@ namespace BinanceFuturesBot.ViewModels
         {
             using (var client = new HttpClient())
             {
-                string trial = "";
                 client.BaseAddress = new Uri(site);
                 Client loginClient = new();
                 loginClient.MacAddress = GetMacAddress();

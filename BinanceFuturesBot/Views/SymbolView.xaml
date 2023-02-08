@@ -65,7 +65,7 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Width="50" Header="SL (%)" DisplayMemberBinding="{Binding Path=SymbolModel.StopLoss}"/>
-                    <!--<GridViewColumn Width="70" Header="Interval (m)" DisplayMemberBinding="{Binding Path=SymbolModel.Interval}"/>-->
+                    <GridViewColumn Width="70" Header="Interval (m)" DisplayMemberBinding="{Binding Path=SymbolModel.Interval}"/>
                     <GridViewColumn Header="Usdt" Width="70">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate >
