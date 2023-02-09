@@ -14,7 +14,7 @@ namespace BinanceFuturesBot.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
         public List<IBinanceKline> Klines { get; set; } = new();
-        public List<(double x, double y)> Points { get; set; } = new();
+        //public List<(double x, double y)> Points { get; set; } = new();
         private StrategyModel _strategyModel { get; set; } = new();
 
         public void SaveStrategy(string name,int number, bool isRun)

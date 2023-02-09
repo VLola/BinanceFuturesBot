@@ -336,8 +336,8 @@ namespace BinanceFuturesBot.ViewModels
                 {
                     SymbolModel.IsOpenOrder = true;
                     WriteLog($"OpenOrder: {JsonConvert.SerializeObject(result.Data)}");
-                    OpenStopLoss(side, quantity);
-                    SymbolModel.Points.Add((DateTime.UtcNow.ToOADate(), Decimal.ToDouble(SymbolModel.Price)));
+                    //OpenStopLoss(side, quantity);
+                    //SymbolModel.Points.Add((DateTime.UtcNow.ToOADate(), Decimal.ToDouble(SymbolModel.Price)));
                 }
             }
             catch (Exception eX)
@@ -358,9 +358,9 @@ namespace BinanceFuturesBot.ViewModels
                 {
                     SymbolModel.IsOpenOrder = false;
                     WriteLog($"CloseOrder: {JsonConvert.SerializeObject(result.Data)}");
-                    SymbolModel.Points.Add((DateTime.UtcNow.ToOADate(), Decimal.ToDouble(SymbolModel.Price)));
+                    //SymbolModel.Points.Add((DateTime.UtcNow.ToOADate(), Decimal.ToDouble(SymbolModel.Price)));
                 }
-                CancelAllOrdersAsync();
+                //CancelAllOrdersAsync();
             }
             catch (Exception eX)
             {
