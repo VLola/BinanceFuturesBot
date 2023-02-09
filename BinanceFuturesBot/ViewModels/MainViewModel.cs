@@ -35,6 +35,16 @@ namespace BinanceFuturesBot.ViewModels
                 }));
             }
         }
+        private RelayCommand? _closeBetsCommand;
+        public RelayCommand CloseBetsCommand
+        {
+            get
+            {
+                return _closeBetsCommand ?? (_closeBetsCommand = new RelayCommand(obj => {
+                    CloseBetsAsync();
+                }));
+            }
+        }
         public MainViewModel()
         {
             if (!Directory.Exists(_pathLog)) Directory.CreateDirectory(_pathLog);
@@ -174,6 +184,34 @@ namespace BinanceFuturesBot.ViewModels
                     }
                     
                     await Task.Delay(60000);
+                }
+            });
+        }
+        private async void CloseBetsAsync()
+        {
+            await Task.Run(async () => {
+                try
+                {
+                    var result = await LoginViewModel.Client.UsdFuturesApi.Account.GetPositionInformationAsync();
+                    if (!result.Success)
+                    {
+                        WriteLog($"Failed CloseOpenOrdersAsync: {result.Error?.Message}");
+                    }
+                    else
+                    {
+                        foreach (var item in result.Data.ToList())
+                        {
+                            if (item.Quantity != 0m)
+                            {
+                                await CloseBetAsync(item.Symbol);
+                            }
+                        }
+                        CheckOpenOrders();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    WriteLog($"CloseOpenOrdersAsync: {ex.Message}");
                 }
             });
         }
