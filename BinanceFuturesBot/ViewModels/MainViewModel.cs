@@ -152,10 +152,12 @@ namespace BinanceFuturesBot.ViewModels
                         }
                         else
                         {
+                            int bets = 0;
                             foreach (var item in result.Data.ToList())
                             {
                                 if (item.Quantity != 0m)
                                 {
+                                    bets++;
                                     SymbolViewModel? symbol = MainModel.Symbols.FirstOrDefault(it => it.SymbolModel.Name == item.Symbol);
                                     if (symbol != null && symbol.SymbolModel.IsRun)
                                     {
@@ -163,6 +165,7 @@ namespace BinanceFuturesBot.ViewModels
                                     }
                                 }
                             }
+                            MainModel.Bets = bets;
                         }
                     }
                     catch (Exception ex)

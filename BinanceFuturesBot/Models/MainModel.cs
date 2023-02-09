@@ -71,5 +71,15 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("Balance");
             }
         }
+        private int _bets { get; set; }
+        public int Bets
+        {
+            get { return _bets; }
+            set
+            {
+                _bets = value;
+                OnPropertyChanged("Bets");
+            }
+        }
     }
 }
