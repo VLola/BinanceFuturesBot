@@ -5,6 +5,7 @@ using Binance.Net.Objects.Models.Spot;
 using BinanceFuturesBot.Command;
 using BinanceFuturesBot.Models;
 using CryptoExchange.Net.CommonObjects;
+using CryptoExchange.Net.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -132,6 +133,8 @@ namespace BinanceFuturesBot.ViewModels
                     StatisticsViewModel.Client = LoginViewModel.Client;
                     CheckOpenOrders();
                     GetSumbolName();
+                    BalanceFutureAsync();
+                    SubscribeToAccountAsync();
                 }
             }
         }
@@ -344,6 +347,74 @@ namespace BinanceFuturesBot.ViewModels
                 WriteLog($"Failed ListBrackets: {ex.Message}");
             }
             return null;
+        }
+
+        #region - Balance (Async) -
+        private async void BalanceFutureAsync()
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    var result = LoginViewModel.Client.UsdFuturesApi.Account.GetAccountInfoAsync().Result;
+                    if (!result.Success)
+                    {
+                        WriteLog($"Failed Success BalanceFutureAsync: {result.Error?.Message}");
+                    }
+                    else
+                    {
+                        MainModel.Balance = result.Data.TotalMarginBalance;
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                WriteLog($"Failed BalanceFutureAsync: {ex.Message}");
+            }
+        }
+        #endregion
+
+        private async void SubscribeToAccountAsync()
+        {
+            var listenKey = await LoginViewModel.Client.UsdFuturesApi.Account.StartUserStreamAsync();
+            if (!listenKey.Success)
+            {
+                WriteLog($"Failed to start user stream: listenKey");
+            }
+            else
+            {
+                KeepAliveUserStreamAsync(listenKey.Data);
+                WriteLog($"Listen Key Created");
+                var result = await LoginViewModel.SocketClient.UsdFuturesStreams.SubscribeToUserDataUpdatesAsync(listenKey: listenKey.Data,
+                    onLeverageUpdate => { },
+                    onMarginUpdate => { },
+                    onAccountUpdate =>
+                    {
+                        MainModel.Balance = onAccountUpdate.Data.UpdateData.Balances.ToList()[0].CrossWalletBalance;
+                    },
+                    onOrderUpdate => { },
+                    onListenKeyExpired => { });
+                if (!result.Success)
+                {
+                    WriteLog($"Failed UserDataUpdates: {result.Error?.Message}");
+                }
+            }
+        }
+        private async void KeepAliveUserStreamAsync(string listenKey)
+        {
+            await Task.Run(async () =>
+            {
+                while (true)
+                {
+                    var result = await LoginViewModel.Client.UsdFuturesApi.Account.KeepAliveUserStreamAsync(listenKey);
+                    if (!result.Success) WriteLog($"Failed KeepAliveUserStreamAsync: {result.Error?.Message}");
+                    else
+                    {
+                        WriteLog("Success KeepAliveUserStreamAsync");
+                    }
+                    await Task.Delay(900000);
+                }
+            });
         }
         private void WriteLog(string text)
         {

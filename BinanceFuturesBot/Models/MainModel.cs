@@ -61,5 +61,15 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("Usdt");
             }
         }
+        private decimal _balance { get; set; }
+        public decimal Balance
+        {
+            get { return _balance; }
+            set
+            {
+                _balance = value;
+                OnPropertyChanged("Balance");
+            }
+        }
     }
 }
