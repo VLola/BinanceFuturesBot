@@ -45,7 +45,7 @@ namespace BinanceFuturesBot.ViewModels
         private void LoadStrategies()
         {
             int[] intervals = { 5, 15 };
-            int[] algorithms = { 1, 2, 3 };
+            int[] algorithms = { 1, 2, 3, 4 };
             decimal[] stopLosses = { 0.5m, 1m, 1.5m, 2m };
             int number = 0;
             foreach (var interval in intervals)

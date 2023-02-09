@@ -190,7 +190,7 @@ namespace BinanceFuturesBot.ViewModels
 
                     if (SymbolModel.NumberAlgorithm == 1)
                     {
-                        // Default
+                        // Алгоритм в противоположную сторону выстрела по HighPrice - LowPrice
                         for (int j = i; j > (i - 30); j--)
                         {
                             sum += (SymbolModel.Klines[j].HighPrice - SymbolModel.Klines[j].LowPrice);
@@ -208,7 +208,7 @@ namespace BinanceFuturesBot.ViewModels
                     }
                     else if (SymbolModel.NumberAlgorithm == 2)
                     {
-                        // Алгоритм по Volume
+                        // Алгоритм в противоположную сторону выстрела по Volume
                         for (int j = i; j > (i - 30); j--)
                         {
                             sum += SymbolModel.Klines[j].Volume;
@@ -226,7 +226,7 @@ namespace BinanceFuturesBot.ViewModels
                     }
                     else if (SymbolModel.NumberAlgorithm == 3)
                     {
-                        // Алгоритм в сторону выстрела
+                        // Алгоритм в сторону выстрела HighPrice - LowPrice
                         for (int j = i; j > (i - 30); j--)
                         {
                             sum += (SymbolModel.Klines[j].HighPrice - SymbolModel.Klines[j].LowPrice);
@@ -235,6 +235,27 @@ namespace BinanceFuturesBot.ViewModels
                         if ((SymbolModel.Klines[i + 1].HighPrice - SymbolModel.Klines[i + 1].LowPrice) > (average * SymbolModel.Open))
                         {
                             if (SymbolModel.Klines[i + 1].ClosePrice < SymbolModel.Klines[i + 1].OpenPrice)
+                            {
+                                SymbolModel.PriceStopLoss = RoundPrice(SymbolModel.Klines[i + 1].ClosePrice + (SymbolModel.Klines[i + 1].ClosePrice * (SymbolModel.StopLoss / 100)));
+                                SymbolModel.IsWait = true;
+                                OpenBetAsync();
+                            }
+                        }
+                    }
+                    else if (SymbolModel.NumberAlgorithm == 4)
+                    {
+                        // Алгоритм в противоположную сторону выстрела по ClosePrice - OpenPrice
+                        for (int j = i; j > (i - 30); j--)
+                        {
+                            decimal value = 0m;
+                            if (SymbolModel.Klines[j].OpenPrice > SymbolModel.Klines[j].ClosePrice) value = SymbolModel.Klines[j].OpenPrice - SymbolModel.Klines[j].ClosePrice;
+                            else value = SymbolModel.Klines[j].ClosePrice - SymbolModel.Klines[j].OpenPrice;
+                            sum += value;
+                        }
+                        decimal average = (sum / 30);
+                        if (SymbolModel.Klines[i + 1].ClosePrice > SymbolModel.Klines[i + 1].OpenPrice)
+                        {
+                            if ((SymbolModel.Klines[i + 1].ClosePrice - SymbolModel.Klines[i + 1].OpenPrice) > (average * SymbolModel.Open))
                             {
                                 SymbolModel.PriceStopLoss = RoundPrice(SymbolModel.Klines[i + 1].ClosePrice + (SymbolModel.Klines[i + 1].ClosePrice * (SymbolModel.StopLoss / 100)));
                                 SymbolModel.IsWait = true;
