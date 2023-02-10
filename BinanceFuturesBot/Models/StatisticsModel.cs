@@ -70,5 +70,15 @@ namespace BinanceFuturesBot.Models
                 OnPropertyChanged("IsEndTime");
             }
         }
+        private int _requests { get; set; }
+        public int Requests
+        {
+            get { return _requests; }
+            set
+            {
+                _requests = value;
+                OnPropertyChanged("Requests");
+            }
+        }
     }
 }

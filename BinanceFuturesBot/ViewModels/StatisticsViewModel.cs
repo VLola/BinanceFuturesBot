@@ -40,7 +40,6 @@ namespace BinanceFuturesBot.ViewModels
                         StatisticsModel.Statistics.Clear();
                         StatisticsModel.SumTotal = 0m;
                     }));
-                    List<Task> tasks = new();
                     DateTime startTime = StatisticsModel.StartTime;
                     DateTime endTime;
 
@@ -59,22 +58,37 @@ namespace BinanceFuturesBot.ViewModels
                     }
 
                     if(endTime > startTime) {
+
+                        List<Task> tasks = new();
+                        StatisticsModel.Requests = 0;
                         while (true)
                         {
                             if ((endTime - startTime) <= TimeSpan.FromDays(7))
                             {
                                 foreach (var symbol in StatisticsModel.Symbols)
                                 {
+                                    if (tasks.Count > 10)
+                                    {
+                                        Task.WaitAll(tasks.ToArray());
+                                        tasks.Clear();
+                                    }
                                     Task task = GetUserTradesAsync(symbol, startTime, endTime);
                                     tasks.Add(task);
+                                    StatisticsModel.Requests += 1;
                                 }
                                 break;
                             }
 
                             foreach (var symbol in StatisticsModel.Symbols)
                             {
+                                if (tasks.Count > 10)
+                                {
+                                    Task.WaitAll(tasks.ToArray());
+                                    tasks.Clear();
+                                }
                                 Task task = GetUserTradesAsync(symbol, startTime, startTime.AddDays(7));
                                 tasks.Add(task);
+                                StatisticsModel.Requests += 1;
                             }
                             startTime = startTime.AddDays(7);
                         }
