@@ -25,6 +25,7 @@ namespace BinanceFuturesBot.ViewModels
         public LoginViewModel LoginViewModel { get; set; } = new();
         public SettingsViewModel SettingsViewModel { get; set; } = new();
         public StatisticsViewModel StatisticsViewModel { get; set; } = new();
+        public SymbolStatisticsViewModel SymbolStatisticsViewModel { get; set; } = new();
         private RelayCommand? _startCommand;
         public RelayCommand StartCommand
         {
@@ -141,6 +142,7 @@ namespace BinanceFuturesBot.ViewModels
                 if(LoginViewModel.LoginModel.IsLoginBinance)
                 {
                     StatisticsViewModel.Client = LoginViewModel.Client;
+                    SymbolStatisticsViewModel.Client = LoginViewModel.Client;
                     CheckOpenOrders();
                     GetSumbolName();
                     BalanceFutureAsync();
@@ -341,10 +343,14 @@ namespace BinanceFuturesBot.ViewModels
             App.Current.Dispatcher.Invoke(new Action(() =>
             {
                 MainModel.Symbols.Add(symbolViewModel);
-            })); 
+            }));
             App.Current.Dispatcher.Invoke(new Action(() =>
             {
                 StatisticsViewModel.StatisticsModel.Symbols.Add(symbol.Name);
+            }));
+            App.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                SymbolStatisticsViewModel.SymbolStatisticsModel.Symbols.Add(symbol.Name);
             }));
         }
         private List<BinanceFuturesUsdtSymbol> ListSymbols()

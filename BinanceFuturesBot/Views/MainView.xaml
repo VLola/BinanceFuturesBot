@@ -30,6 +30,11 @@
                         <local:StatisticsView/>
                     </Grid>
                 </TabItem>
+                <TabItem Header="Symbol Statistics">
+                    <Grid>
+                        <local:SymbolStatisticsView/>
+                    </Grid>
+                </TabItem>
             </TabControl>
         </Grid>
     </Grid>
