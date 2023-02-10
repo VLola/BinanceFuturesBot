@@ -30,14 +30,13 @@ namespace BinanceFuturesBot.ViewModels
         {
             try
             {
-                await Task.Run(() =>
+                await Task.Run(async () =>
                 {
                     App.Current.Dispatcher.Invoke(new Action(() =>
                     {
                         SymbolStatisticsModel.Statistics.Clear();
                         SymbolStatisticsModel.SumTotal = 0m;
                     }));
-                    List<Task> tasks = new();
                     DateTime startTime = SymbolStatisticsModel.StartTime;
                     DateTime endTime;
 
@@ -57,26 +56,39 @@ namespace BinanceFuturesBot.ViewModels
 
                     if (endTime > startTime)
                     {
+                        List<Task> tasks = new();
+                        SymbolStatisticsModel.Requests = 0;
                         while (true)
                         {
                             if ((endTime - startTime) <= TimeSpan.FromDays(7))
                             {
                                 foreach (var symbol in SymbolStatisticsModel.Symbols)
                                 {
+                                    if (tasks.Count > 10)
+                                    {
+                                        Task.WaitAll(tasks.ToArray());
+                                        tasks.Clear();
+                                    }
                                     Task task = GetUserTradesAsync(symbol, startTime, endTime);
                                     tasks.Add(task);
+                                    SymbolStatisticsModel.Requests += 1;
                                 }
                                 break;
                             }
 
                             foreach (var symbol in SymbolStatisticsModel.Symbols)
                             {
+                                if(tasks.Count > 10)
+                                {
+                                    Task.WaitAll(tasks.ToArray());
+                                    tasks.Clear();
+                                }
                                 Task task = GetUserTradesAsync(symbol, startTime, startTime.AddDays(7));
                                 tasks.Add(task);
+                                SymbolStatisticsModel.Requests += 1;
                             }
                             startTime = startTime.AddDays(7);
                         }
-
                         Task.WaitAll(tasks.ToArray());
 
                         MessageBox.Show("Ok");

@@ -55,6 +55,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="{Binding Path=SymbolStatisticsViewModel.SymbolStatisticsModel.Requests, StringFormat=Requests: {0}}"/>
             <TextBlock Grid.Column="1" Text="Total:"/>
             <TextBlock Grid.Column="2" Text="{Binding Path=SymbolStatisticsViewModel.SymbolStatisticsModel.SumTotal}" Style="{StaticResource styleSumTotal}"/>
         </Grid>
