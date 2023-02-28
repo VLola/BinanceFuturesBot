@@ -58,28 +58,33 @@ namespace BinanceFuturesBot.ViewModels
                     User? user = JsonConvert.DeserializeObject<User>(json);
                     if (user != null)
                     {
-                        HttpClient client = new HttpClient();
-                        client.BaseAddress = new Uri(site);
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        LoginModel.IsTrial = true;
+                        LoginBinance(user.IsTestnet, user.ApiKey, user.SecretKey);
 
-                        HttpResponseMessage response = client.GetAsync($"api/User/Get?trialKey={user.TrialKey}&&apiKey={user.ApiKey}&&macAddress={GetMacAddress()}").Result;
-                        if (response.IsSuccessStatusCode)
-                        {
-                            var result = response.Content.ReadAsStringAsync().Result;
-                            if (result == "true")
-                            {
-                                LoginModel.IsTrial = true;
-                                LoginBinance(user.IsTestnet, user.ApiKey, user.SecretKey);
-                            }
-                            else
-                            {
-                                MessageBox.Show("Login failed");
-                            }
-                        }
-                        else
-                        {
-                            MessageBox.Show($"{(int)response.StatusCode}, {response.ReasonPhrase}");
-                        }
+                        //User check trial key
+
+                        //HttpClient client = new HttpClient();
+                        //client.BaseAddress = new Uri(site);
+                        //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                        //HttpResponseMessage response = client.GetAsync($"api/User/Get?trialKey={user.TrialKey}&&apiKey={user.ApiKey}&&macAddress={GetMacAddress()}").Result;
+                        //if (response.IsSuccessStatusCode)
+                        //{
+                        //    var result = response.Content.ReadAsStringAsync().Result;
+                        //    if (result == "true")
+                        //    {
+                        //        LoginModel.IsTrial = true;
+                        //        LoginBinance(user.IsTestnet, user.ApiKey, user.SecretKey);
+                        //    }
+                        //    else
+                        //    {
+                        //        MessageBox.Show("Login failed");
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    MessageBox.Show($"{(int)response.StatusCode}, {response.ReasonPhrase}");
+                        //}
                     }
                 }
             }
